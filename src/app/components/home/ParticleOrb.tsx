@@ -1,0 +1,254 @@
+"use client";
+
+import { useEffect, useRef } from "react";
+
+interface Particle {
+  x: number;
+  y: number;
+  z: number;
+  baseX: number;
+  baseY: number;
+  baseZ: number;
+  vx: number;
+  vy: number;
+  size: number;
+}
+
+interface ParticleOrbProps {
+  isCompact: boolean;
+}
+
+export function ParticleOrb({ isCompact }: ParticleOrbProps) {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const particlesRef = useRef<Particle[]>([]);
+  const mouseRef = useRef({ x: 0, y: 0, isMoving: false });
+  const animationRef = useRef<number | null>(null);
+  const rotationRef = useRef(0);
+  const contractionRef = useRef(0);
+  const returnAnimationRef = useRef(0);
+  const isReturningRef = useRef(false);
+  const targetScaleRef = useRef(1);
+  const currentScaleRef = useRef(3.5);
+  const targetYOffsetRef = useRef(0);
+  const currentYOffsetRef = useRef(0);
+
+  // Update targets when compact state changes
+  useEffect(() => {
+    if (isCompact) {
+      targetScaleRef.current = 0.4;
+      targetYOffsetRef.current = -window.innerHeight * 0.35;
+      isReturningRef.current = false;
+    } else {
+      targetScaleRef.current = 1;
+      targetYOffsetRef.current = 0;
+      isReturningRef.current = true;
+      returnAnimationRef.current = 0;
+    }
+  }, [isCompact]);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+
+    // Set canvas size
+    const updateSize = () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    };
+    updateSize();
+    window.addEventListener("resize", updateSize);
+
+    // Create particles in a sphere
+    const numParticles = 1000;
+    const radius = 250;
+    const particles: Particle[] = [];
+
+    for (let i = 0; i < numParticles; i++) {
+      const theta = Math.random() * Math.PI * 2;
+      const phi = Math.acos(2 * Math.random() - 1);
+      const r = radius * Math.cbrt(Math.random()); // Cube root for even distribution
+
+      const x = r * Math.sin(phi) * Math.cos(theta);
+      const y = r * Math.sin(phi) * Math.sin(theta);
+      const z = r * Math.cos(phi);
+
+      particles.push({
+        x,
+        y,
+        z,
+        baseX: x,
+        baseY: y,
+        baseZ: z,
+        vx: 0,
+        vy: 0,
+        size: Math.random() * 2 + 1,
+      });
+    }
+
+    particlesRef.current = particles;
+
+    // Mouse movement handler
+    const handleMouseMove = (e: MouseEvent) => {
+      const rect = canvas.getBoundingClientRect();
+      mouseRef.current = {
+        x: e.clientX - rect.left - canvas.width / 2,
+        y: e.clientY - rect.top - canvas.height / 2,
+        isMoving: true,
+      };
+    };
+
+    const handleMouseLeave = () => {
+      mouseRef.current.isMoving = false;
+    };
+
+    canvas.addEventListener("mousemove", handleMouseMove);
+    canvas.addEventListener("mouseleave", handleMouseLeave);
+
+    // Animation loop
+    const animate = () => {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // Contraction animation (starts large, contracts to center with acceleration)
+      // Custom easing for returning from compact (slow start, then faster)
+      let lerpFactor = 0.05;
+      if (isReturningRef.current && returnAnimationRef.current < 100) {
+        returnAnimationRef.current++;
+        const t = returnAnimationRef.current / 100;
+        // Cubic bezier approximation: starts very slow (0.7, 0, 0.3, 1)
+        const eased = t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+        lerpFactor = 0.01 + eased * 0.09; // Range from 0.01 to 0.10
+      }
+
+      if (contractionRef.current < 200) {
+        contractionRef.current++;
+        const t = contractionRef.current / 200;
+        const eased = t * t * t; // Ease-in cubic (accelerates as it gets closer)
+        currentScaleRef.current = 3.5 - eased * (3.5 - targetScaleRef.current);
+      } else {
+        // Smooth transition to target scale and position
+        currentScaleRef.current +=
+          (targetScaleRef.current - currentScaleRef.current) * lerpFactor;
+      }
+
+      currentYOffsetRef.current +=
+        (targetYOffsetRef.current - currentYOffsetRef.current) * lerpFactor;
+
+      // Slowly rotate the orb
+      rotationRef.current += 0.003;
+
+      const centerX = canvas.width / 2;
+      const centerY = canvas.height / 2 + currentYOffsetRef.current;
+      const mouse = mouseRef.current;
+
+      particles.forEach((particle) => {
+        // Apply rotation
+        const rotatedX =
+          particle.baseX * Math.cos(rotationRef.current) -
+          particle.baseZ * Math.sin(rotationRef.current);
+        const rotatedZ =
+          particle.baseX * Math.sin(rotationRef.current) +
+          particle.baseZ * Math.cos(rotationRef.current);
+
+        // Mouse interaction - repel particles
+        if (mouse.isMoving) {
+          const dx = rotatedX - mouse.x;
+          const dy = particle.baseY - mouse.y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          const force = Math.max(0, 250 - dist) / 250;
+
+          particle.vx += (dx / dist) * force * 5;
+          particle.vy += (dy / dist) * force * 5;
+        }
+
+        // Apply velocity
+        particle.x += (rotatedX - particle.x + particle.vx) * 0.1;
+        particle.y += (particle.baseY - particle.y + particle.vy) * 0.1;
+        particle.z = rotatedZ;
+
+        // Damping
+        particle.vx *= 0.9;
+        particle.vy *= 0.9;
+
+        // Apply expansion/contraction scale
+        const scaledX = particle.x * currentScaleRef.current;
+        const scaledY = particle.y * currentScaleRef.current;
+        const scaledZ = particle.z * currentScaleRef.current;
+
+        // Project to 2D
+        const scale = Math.max(0.1, 300 / (300 + scaledZ));
+        const x2d = scaledX * scale + centerX;
+        const y2d = scaledY * scale + centerY;
+
+        // Size based on depth (ensure always positive)
+        const size = Math.abs(particle.size * scale);
+
+        // Opacity based on depth
+        const opacity = Math.max(0.2, Math.min(1, (scaledZ + 250) / 500));
+
+        // Color gradient using brand colors (orange, blue, pink) - stacked by y position
+        const colors = [
+          { r: 255, g: 118, b: 0 }, // orange
+          { r: 0, g: 191, b: 255 }, // blue
+          { r: 255, g: 58, b: 218 }, // pink
+        ];
+
+        const colorIndex = Math.floor(
+          ((particle.baseY / radius + 1) / 2) * colors.length,
+        );
+        const clampedIndex = Math.max(
+          0,
+          Math.min(colors.length - 1, colorIndex),
+        );
+        const color = colors[clampedIndex];
+
+        // Create radial gradient for glow effect (more performant than shadowBlur)
+        const gradient = ctx.createRadialGradient(
+          x2d,
+          y2d,
+          0,
+          x2d,
+          y2d,
+          size * 3,
+        );
+        gradient.addColorStop(
+          0,
+          `rgba(${color.r}, ${color.g}, ${color.b}, ${opacity})`,
+        );
+        gradient.addColorStop(
+          0.4,
+          `rgba(${color.r}, ${color.g}, ${color.b}, ${opacity * 0.6})`,
+        );
+        gradient.addColorStop(1, `rgba(${color.r}, ${color.g}, ${color.b}, 0)`);
+
+        ctx.fillStyle = gradient;
+        ctx.beginPath();
+        ctx.arc(x2d, y2d, size * 3, 0, Math.PI * 2);
+        ctx.fill();
+      });
+
+      animationRef.current = requestAnimationFrame(animate);
+    };
+
+    animate();
+
+    return () => {
+      window.removeEventListener("resize", updateSize);
+      canvas.removeEventListener("mousemove", handleMouseMove);
+      canvas.removeEventListener("mouseleave", handleMouseLeave);
+      if (animationRef.current) {
+        cancelAnimationFrame(animationRef.current);
+      }
+    };
+  }, []);
+
+  return (
+    <canvas
+      ref={canvasRef}
+      className="fixed inset-0 z-10 pointer-events-auto"
+      style={{ touchAction: "none" }}
+    />
+  );
+}

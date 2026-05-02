@@ -1,0 +1,9 @@
+/* Color tokens */
+/* These MUST be updated to match the colors in the utils/constants/colors.js file */
+@theme {
+  --color-black: #000000;
+  --color-white: #ffffff;
+  --color-orange: rgb(255, 118, 0);
+  --color-blue: rgb(0, 191, 255);
+  --color-pink: rgb(255, 58, 218);
+}
