@@ -92,47 +92,62 @@ export function ParticleOrb({
     updateSize();
     window.addEventListener("resize", updateSize);
 
-    // Pre-render blurred particles for each color (much more performant)
-    const colors = [
+    // Apply blur filter to entire canvas for glow effect on mobile (GPU-accelerated)
+    const isMobile = window.innerWidth < 768;
+    canvas.style.filter = isMobile ? "blur(2px)" : "none";
+
+    // Pre-render gradient particles for desktop
+    const gradientColors = [
       { r: 255, g: 118, b: 0 }, // orange
       { r: 0, g: 191, b: 255 }, // blue
       { r: 255, g: 58, b: 218 }, // pink
     ];
 
     const particleCache: HTMLCanvasElement[] = [];
-    colors.forEach((color) => {
-      const offscreen = document.createElement("canvas");
-      const size = 30; // Base size for cached particle
-      offscreen.width = size * 2;
-      offscreen.height = size * 2;
-      const offCtx = offscreen.getContext("2d");
-      if (offCtx) {
-        const gradient = offCtx.createRadialGradient(
-          size,
-          size,
-          0,
-          size,
-          size,
-          size,
-        );
-        gradient.addColorStop(
-          0,
-          `rgba(${color.r}, ${color.g}, ${color.b}, 0.8)`,
-        );
-        gradient.addColorStop(
-          0.4,
-          `rgba(${color.r}, ${color.g}, ${color.b}, 0.5)`,
-        );
-        gradient.addColorStop(1, `rgba(${color.r}, ${color.g}, ${color.b}, 0)`);
-        offCtx.fillStyle = gradient;
-        offCtx.fillRect(0, 0, size * 2, size * 2);
-      }
-      particleCache.push(offscreen);
-    });
+    if (!isMobile) {
+      gradientColors.forEach((color) => {
+        const offscreen = document.createElement("canvas");
+        const size = 30;
+        offscreen.width = size * 2;
+        offscreen.height = size * 2;
+        const offCtx = offscreen.getContext("2d");
+        if (offCtx) {
+          const gradient = offCtx.createRadialGradient(
+            size,
+            size,
+            0,
+            size,
+            size,
+            size,
+          );
+          gradient.addColorStop(
+            0,
+            `rgba(${color.r}, ${color.g}, ${color.b}, 0.8)`,
+          );
+          gradient.addColorStop(
+            0.4,
+            `rgba(${color.r}, ${color.g}, ${color.b}, 0.5)`,
+          );
+          gradient.addColorStop(
+            1,
+            `rgba(${color.r}, ${color.g}, ${color.b}, 0)`,
+          );
+          offCtx.fillStyle = gradient;
+          offCtx.fillRect(0, 0, size * 2, size * 2);
+        }
+        particleCache.push(offscreen);
+      });
+    }
+
+    // Solid colors for mobile (used with blur filter)
+    const solidColors = [
+      "rgba(255, 118, 0, 0.8)", // orange
+      "rgba(0, 191, 255, 0.8)", // blue
+      "rgba(255, 58, 218, 0.8)", // pink
+    ];
 
     // Create particles in a sphere
     // Significantly reduce particle count on mobile for better iOS performance
-    const isMobile = window.innerWidth < 768;
     const numParticles = isMobile ? 400 : 1000;
     // Responsive radius: use vw on mobile, fixed px on desktop
     const radius = isMobile ? window.innerWidth * 0.35 : 250;
@@ -179,20 +194,8 @@ export function ParticleOrb({
     canvas.addEventListener("mousemove", handleMouseMove);
     canvas.addEventListener("mouseleave", handleMouseLeave);
 
-    // Frame skipping for better mobile performance
-    let frameCount = 0;
-    const skipFrames = isMobile ? 1 : 0; // Skip every other frame on mobile
-
     // Animation loop
     const animate = () => {
-      frameCount++;
-
-      // Skip frames on mobile
-      if (skipFrames > 0 && frameCount % (skipFrames + 1) !== 0) {
-        animationRef.current = requestAnimationFrame(animate);
-        return;
-      }
-
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
       // Contraction animation (starts large, contracts to center with acceleration)
@@ -286,25 +289,28 @@ export function ParticleOrb({
         );
 
         // Select color based on y position
-        const colorIndex = Math.floor(
-          ((particle.baseY / radius + 1) / 2) * particleCache.length,
-        );
-        const clampedIndex = Math.max(
-          0,
-          Math.min(particleCache.length - 1, colorIndex),
-        );
+        const colorIndex = Math.floor(((particle.baseY / radius + 1) / 2) * 3);
+        const clampedIndex = Math.max(0, Math.min(2, colorIndex));
 
-        // Draw pre-rendered particle with opacity
-        ctx.globalAlpha = opacity;
-        const renderSize = size * 3; // Match the glow size from before
-        ctx.drawImage(
-          particleCache[clampedIndex],
-          x2d - renderSize,
-          y2d - renderSize,
-          renderSize * 2,
-          renderSize * 2,
-        );
-        ctx.globalAlpha = 1;
+        if (isMobile) {
+          // Mobile: Draw solid circle (blur filter creates glow)
+          ctx.fillStyle = solidColors[clampedIndex];
+          ctx.beginPath();
+          ctx.arc(x2d, y2d, size * 2, 0, Math.PI * 2);
+          ctx.fill();
+        } else {
+          // Desktop: Draw pre-rendered gradient particle
+          ctx.globalAlpha = opacity;
+          const renderSize = size * 3;
+          ctx.drawImage(
+            particleCache[clampedIndex],
+            x2d - renderSize,
+            y2d - renderSize,
+            renderSize * 2,
+            renderSize * 2,
+          );
+          ctx.globalAlpha = 1;
+        }
       });
 
       animationRef.current = requestAnimationFrame(animate);
