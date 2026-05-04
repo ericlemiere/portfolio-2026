@@ -53,25 +53,40 @@ export function AnimatedName({
         ref={(el) => {
           smallLetterRefs.current[offset + i] = el;
         }}
-        style={{ display: "inline-block", opacity: 0 }}
+        style={{
+          display: "inline-block",
+          opacity: 0,
+          textShadow: `
+            0 0 20px rgba(0, 191, 255, 0.5),
+            0 0 20px rgba(0, 191, 255, 0.3),
+            0 0 30px rgba(0, 191, 255, 0.1),
+            1px 1px 2px rgba(0, 0, 0, 0.8),
+            2px 2px 4px rgba(0, 0, 0, 0.6),
+            3px 3px 6px rgba(0, 0, 0, 0.4),
+            4px 4px 8px rgba(0, 0, 0, 0.2)
+          `,
+          transform: "translateZ(0)",
+          WebkitFontSmoothing: "antialiased",
+          fontWeight: i === 0 ? "bold" : "normal",
+          textTransform: i !== 0 ? "lowercase" : "uppercase",
+          cursor: 'pointer',
+        }}
       >
         {letter}
       </span>
     ));
 
   return (
-    <div
-      className="fixed top-4 left-1/2 -translate-x-1/2 z-40 text-[2.8vw] font-bold leading-none select-none flex flex-row items-center cursor-pointer"
+    <header
+      className="fixed top-4 left-1/2 -translate-x-1/2 z-40 text-5xl lg:text-[5vw] font-bold leading-none select-none flex flex-row items-center cursor-pointer"
       onClick={onNavigateHome}
       role="button"
       aria-label="Return home"
       tabIndex={0}
       onKeyDown={(e) => e.key === "Enter" && onNavigateHome?.()}
     >
-      <div className="flex ">{renderLetters(LINE1, 0)}</div>
-      <h1 className="flex ml-4">
-        {renderLetters(LINE2, LINE1.length)}
-      </h1>
-    </div>
+      <div className="flex cursor-pointer">{renderLetters(LINE1, 0)}</div>
+      <h1 className="flex ml-4 cursor-pointer">{renderLetters(LINE2, LINE1.length)}</h1>
+    </header>
   );
 }

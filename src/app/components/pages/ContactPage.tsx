@@ -1,22 +1,33 @@
 "use client";
 
+import { HiOutlineMail } from "react-icons/hi";
+import { FaGithub, FaLinkedin, FaInstagram } from "react-icons/fa";
 import { PageWrapper } from "../PageWrapper";
 
 const LINKS = [
   {
+    icon: HiOutlineMail,
     label: "EMAIL",
-    value: "eric@riff.agency",
-    href: "mailto:eric@riff.agency",
+    value: "lemierecs@gmail.com",
+    href: "mailto:lemierecs@gmail.com",
   },
   {
+    icon: FaGithub,
     label: "GITHUB",
     value: "github.com/ericlemiere",
     href: "https://github.com/ericlemiere",
   },
   {
+    icon: FaLinkedin,
     label: "LINKEDIN",
     value: "linkedin.com/in/ericlemiere",
     href: "https://linkedin.com/in/ericlemiere",
+  },
+  {
+    icon: FaInstagram,
+    label: "INSTAGRAM",
+    value: "instagram.com/ericlemiere",
+    href: "https://instagram.com/ericlemiere",
   },
 ];
 
@@ -28,21 +39,22 @@ export function ContactPage() {
       contentClassName="space-y-10"
     >
       {/* Links */}
-      <ul className="space-y-5">
+      <ul className="flex md:flex-col space-x-4 md:space-y-4 cursor-pointer">
         {LINKS.map((link) => (
           <li key={link.label}>
             <a
               href={link.href}
-              className="flex items-baseline gap-5 group"
+              className="flex flex-col md:flex-row md:items-center items-baseline md:gap-5 group cursor-pointer"
               target={link.href.startsWith("http") ? "_blank" : undefined}
               rel={
                 link.href.startsWith("http") ? "noopener noreferrer" : undefined
               }
             >
-              <span className="text-xs tracking-widest font-bold text-foreground/35 w-20 shrink-0">
+              {<link.icon className="text-4xl md:hidden mr-2" />}
+              <span className="hidden md:block text-xs tracking-widest font-bold text-foreground/35 w-20 shrink-0 cursor-pointer">
                 {link.label}
               </span>
-              <span className="text-lg group-hover:text-orange transition-colors duration-150">
+              <span className="hidden md:block text-lg group-hover:text-orange transition-colors duration-150 cursor-pointer">
                 {link.value}
               </span>
             </a>
@@ -51,7 +63,7 @@ export function ContactPage() {
       </ul>
 
       {/* Form */}
-      <div className="border-t border-foreground/10 pt-10">
+      <div className="md:pt-10">
         <p className="text-xs tracking-widest font-bold text-foreground/35 mb-8">
           SEND A MESSAGE
         </p>

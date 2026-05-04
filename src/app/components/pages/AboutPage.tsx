@@ -1,66 +1,60 @@
+"use client";
+
 import { PageWrapper } from "../PageWrapper";
+import { useState } from "react";
+import { createPortal } from "react-dom";
 
 const SKILLS = [
   "TypeScript",
+  "JavaScript",
   "React",
   "Next.js",
-  "Node.js",
-  "Go",
-  "PostgreSQL",
-  "CSS / Animation",
-  "Figma",
-];
-
-const EXPERIENCE = [
-  {
-    role: "Senior Frontend Engineer",
-    company: "Acme Corp",
-    period: "2022 — Present",
-    note: "Led UI architecture for a design system used by 30+ product teams.",
-  },
-  {
-    role: "Software Engineer",
-    company: "Startup Studio",
-    period: "2020 — 2022",
-    note: "Full-stack product development across three zero-to-one launches.",
-  },
-  {
-    role: "Freelance Developer & Designer",
-    company: "Independent",
-    period: "2018 — 2020",
-    note: "Brand identity, web, and interactive work for agencies and founders.",
-  },
+  "Sanity",
+  "Contentful",
+  "Tailwind CSS",
+  "GSAP",
+  "Shopify",
+  "Wordpress",
+  "Elementor",
+  "Squarespace",
+  "...and more",
 ];
 
 export function AboutPage() {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const toggleModal = () => {
+    setIsModalOpen(!isModalOpen);
+  };
+
   return (
     <PageWrapper title="ABOUT" accentColor="pink">
       {/* Bio */}
       <div className="space-y-4">
-        <p className="text-base leading-relaxed text-foreground/75">
-          I&apos;m a software engineer and designer who builds digital products
-          at the intersection of thoughtful engineering and visual craft.
+        <p className="text-base lg:text-lg leading-relaxed text-foreground/75">
+          I love taking things and improving them. My first career as a musician
+          taught me the importance of creativity and discipline, and how to work
+          with others to bring a vision to life. I bring that same mindset to my
+          work as a software developer, where I get to build things that people
+          use and enjoy.
         </p>
-        <p className="text-base leading-relaxed text-foreground/75">
-          I&apos;ve worked across the full stack — from distributed backend
-          systems to pixel-precise interfaces — with a particular focus on
-          motion, typography, and performance.
-        </p>
-        <p className="text-base leading-relaxed text-foreground/75">
-          Currently open to new opportunities.
+        <p className="text-base lg:text-lg leading-relaxed text-foreground/75">
+          I&apos;ve worked across the full stack, from custom backend CMS design
+          to pixel-precise interfaces, with a particular focus on front-end
+          usability, accessibility, and performance.
         </p>
       </div>
 
       {/* Skills */}
       <div>
-        <p className="text-xs tracking-widest font-bold text-foreground/35 mb-4">
+        <p className="text-xs lg:text-md tracking-widest font-bold text-foreground/35 mb-4">
           SKILLS
         </p>
         <div className="flex flex-wrap gap-2">
           {SKILLS.map((s) => (
             <span
               key={s}
-              className="text-xs text-pink border border-pink/30 rounded-full px-3 py-1"
+              className="text-sm lg:text-sm text-white border border-pink rounded-full px-3 py-1"
             >
               {s}
             </span>
@@ -68,28 +62,89 @@ export function AboutPage() {
         </div>
       </div>
 
-      {/* Experience */}
+      {/* Music */}
       <div>
-        <p className="text-xs tracking-widest font-bold text-foreground/35 mb-6">
-          EXPERIENCE
+        <p className="text-xs lg:text-md tracking-widest font-bold text-foreground/35 mb-4">
+          MUSIC
         </p>
-        <ul>
-          {EXPERIENCE.map((e) => (
-            <li key={e.role} className="border-t border-foreground/10 py-5">
-              <div className="flex items-baseline justify-between gap-4 mb-1">
-                <span className="font-bold text-sm">{e.role}</span>
-                <span className="text-xs text-foreground/35 tabular-nums shrink-0">
-                  {e.period}
-                </span>
+        <p className="text-base lg:text-lg leading-relaxed text-foreground/75 mb-4">
+          Before software, I had a 20-year career as a musician, producer, and
+          audio engineer. I toured the world playing for various artists, and
+          got to do some pretty cool things along the way.
+        </p>
+        <div
+          className="text-pink cursor-pointer hover:underline-offset-8 transition-all duration-150 underline underline-offset-4"
+          onClick={toggleModal}
+        >
+          Career Highlights
+        </div>
+        {isModalOpen &&
+          createPortal(
+            <div
+              className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 transition-opacity duration-300 z-50 opacity-100 pointer-events-auto"
+              onClick={toggleModal}
+            >
+              <div
+                className="bg-black relative border border-foreground/20 rounded-lg p-6 lg:p-8 w-[90%] max-w-150 max-h-[85vh] overflow-y-auto"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <button
+                  onClick={toggleModal}
+                  className="absolute top-2 right-2 text-foreground/50 hover:text-foreground transition-colors text-3xl leading-none ml-4"
+                  aria-label="Close modal"
+                >
+                  ×
+                </button>
+                <div className="flex justify-between items-start mb-6">
+                  <h3 className="text-lg lg:text-2xl font-bold text-pink">
+                    Career Highlights
+                  </h3>
+                </div>
+
+                <div className="space-y-6 text-foreground/80">
+                  <ul className="space-y-4 list-none">
+                    <li>
+                      <strong className="text-pink mr-2">Superman:</strong>
+                      Played guitar on the movie trailers for the 2025 Superman
+                      movie
+                    </li>
+                    <li>
+                      <strong className="text-pink mr-2">Air Climber:</strong>
+                      My solo instrumental music project
+                    </li>
+                    <li>
+                      <strong className="text-pink mr-2">Surveyor:</strong>
+                      Co-produced, co-wrote, and played several instruments on
+                      Surveyor's debut album XI
+                    </li>
+                    <li>
+                      <strong className="text-pink mr-2">Top of the Charts:</strong>
+                      Produced and recorded multiple albums that reached #1 on
+                      iTunes in their respective genres
+                    </li>
+                    <li>
+                      <strong className="text-pink mr-2">Television:</strong>
+                      Had music featured on television shows and commercials,
+                      plus a live performance on Good Morning America.
+                    </li>
+                    <li>
+                      <strong className="text-pink mr-2">
+                        Madison Square Garden:
+                      </strong>
+                      Played a sold-out show at the iconic Madison Square Garden
+                    </li>
+                    <li>
+                      <strong className="text-pink mr-2">Tours:</strong>
+                      Traveled all over the US and Europe (plus a show in
+                      Africa) playing guitar/bass/drums/keys in front of
+                      millions with various artists
+                    </li>
+                  </ul>
+                </div>
               </div>
-              <p className="text-xs text-foreground/45 mb-1">{e.company}</p>
-              <p className="text-sm text-foreground/60 leading-relaxed">
-                {e.note}
-              </p>
-            </li>
-          ))}
-        </ul>
-        <div className="border-t border-foreground/10" />
+            </div>,
+            document.body,
+          )}
       </div>
     </PageWrapper>
   );

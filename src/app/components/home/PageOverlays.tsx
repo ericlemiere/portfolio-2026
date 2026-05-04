@@ -14,33 +14,33 @@ export function PageOverlays({ visiblePage }: PageOverlaysProps) {
     <>
       <div
         className={[
-          "fixed inset-0 z-20 flex items-center justify-center transition-transform duration-1200 ease-out",
+          "fixed inset-0 z-20 flex items-start lg:items-center justify-center transition-transform duration-1200 ease-out overflow-y-auto",
           visiblePage === "projects" ? "translate-x-0" : "-translate-x-full",
         ].join(" ")}
       >
-        <div className="h-[80vh] w-[70vw] overflow-hidden">
+        <div className="pt-40 lg:pt-10 pb-10 lg:m-0 lg:h-[80vh] w-screen lg:w-[70vw] lg:overflow-y-hidden lg:overflow-x-hidden">
           <ProjectsPage />
         </div>
       </div>
 
       <div
         className={[
-          "fixed inset-0 z-20 flex items-center justify-center transition-transform duration-1200 ease-out",
+          "fixed inset-0 z-20 flex items-start lg:items-center justify-center transition-transform duration-1200 ease-out overflow-y-auto",
           visiblePage === "about" ? "translate-x-0" : "translate-x-full",
         ].join(" ")}
       >
-        <div className="h-[80vh] w-[70vw] overflow-hidden">
+        <div className="pt-40 lg:pt-10 pb-10 mx-auto lg:m-0 lg:h-[80vh] w-19/20 lg:w-[70vw] max-w-4xl lg:overflow-y-auto">
           <AboutPage />
         </div>
       </div>
 
       <div
         className={[
-          "fixed inset-0 z-20 flex items-center justify-center transition-transform duration-1200 ease-out",
+          "fixed inset-0 z-20 flex items-start lg:items-center justify-center transition-transform duration-1200 ease-out overflow-y-auto",
           visiblePage === "contact" ? "translate-y-0" : "translate-y-full",
         ].join(" ")}
       >
-        <div className="h-[80vh] w-[70vw] overflow-hidden">
+        <div className="pt-40 lg:pt-10 pb-10 mx-auto lg:m-0 lg:h-[80vh] w-19/20 lg:w-[70vw] lg:overflow-y-auto">
           <ContactPage />
         </div>
       </div>

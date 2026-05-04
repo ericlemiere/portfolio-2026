@@ -34,16 +34,39 @@ export function ParticleOrb({ isCompact }: ParticleOrbProps) {
 
   // Update targets when compact state changes
   useEffect(() => {
-    if (isCompact) {
-      targetScaleRef.current = 0.4;
-      targetYOffsetRef.current = -window.innerHeight * 0.35;
-      isReturningRef.current = false;
-    } else {
-      targetScaleRef.current = 1;
-      targetYOffsetRef.current = 0;
-      isReturningRef.current = true;
+    const updateCompactPosition = () => {
+      if (isCompact) {
+        // Position center so top edge of orb is at top of screen
+        // Calculate responsive radius based on viewport
+        const radius = window.innerWidth < 768 ? window.innerWidth * 0.35 : 250;
+        // Orb radius with compact scale is 0.4
+        const effectiveRadius = radius * 0.4;
+        const defaultCenter = window.innerHeight / 2; // Center is at 50% by default
+        // We want: centerY = effectiveRadius (so top of orb is at y=0)
+        // centerY = defaultCenter + offset
+        // So: offset = effectiveRadius - defaultCenter
+        targetYOffsetRef.current = effectiveRadius - defaultCenter;
+      } else {
+        targetYOffsetRef.current = 0;
+      }
+    };
+
+    targetScaleRef.current = isCompact ? 0.4 : 1;
+    isReturningRef.current = !isCompact;
+    if (!isCompact) {
       returnAnimationRef.current = 0;
     }
+    updateCompactPosition();
+
+    // Update position on window resize when in compact mode
+    const handleResize = () => {
+      if (isCompact) {
+        updateCompactPosition();
+      }
+    };
+
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
   }, [isCompact]);
 
   useEffect(() => {
@@ -63,7 +86,8 @@ export function ParticleOrb({ isCompact }: ParticleOrbProps) {
 
     // Create particles in a sphere
     const numParticles = 1000;
-    const radius = 250;
+    // Responsive radius: use vw on mobile, fixed px on desktop
+    const radius = window.innerWidth < 768 ? window.innerWidth * 0.35 : 250;
     const particles: Particle[] = [];
 
     for (let i = 0; i < numParticles; i++) {
@@ -157,7 +181,7 @@ export function ParticleOrb({ isCompact }: ParticleOrbProps) {
           const dx = rotatedX - mouse.x;
           const dy = particle.baseY - mouse.y;
           const dist = Math.sqrt(dx * dx + dy * dy);
-          const force = Math.max(0, 250 - dist) / 250;
+          const force = Math.max(0, radius - dist) / radius;
 
           particle.vx += (dx / dist) * force * 5;
           particle.vy += (dy / dist) * force * 5;
@@ -186,7 +210,10 @@ export function ParticleOrb({ isCompact }: ParticleOrbProps) {
         const size = Math.abs(particle.size * scale);
 
         // Opacity based on depth
-        const opacity = Math.max(0.2, Math.min(1, (scaledZ + 250) / 500));
+        const opacity = Math.max(
+          0.2,
+          Math.min(1, (scaledZ + radius) / (radius * 2)),
+        );
 
         // Color gradient using brand colors (orange, blue, pink) - stacked by y position
         const colors = [

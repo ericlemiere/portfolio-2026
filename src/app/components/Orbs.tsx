@@ -27,46 +27,40 @@ export function Orbs() {
     >
       {/* Blue orb — starts upper-center, keyframe range keeps it on screen */}
       <div
+        className="absolute rounded-full opacity-[0.45] md:opacity-[0.18]"
         style={{
-          position: "absolute",
-          width: "24vw",
-          height: "24vw",
-          borderRadius: "50%",
+          width: "clamp(120px, 24vw, 400px)",
+          height: "clamp(120px, 24vw, 400px)",
           background: "var(--color-blue)",
-          filter: "blur(85px)",
+          filter: "blur(clamp(50px, 10vw, 85px))",
           top: "20%",
           left: "30%",
-          opacity: 0.18,
           animation: "orbFloat1 45s ease-in-out infinite",
         }}
       />
       {/* Pink orb — starts mid-left */}
       <div
+        className="absolute rounded-full opacity-[0.55] md:opacity-[0.18]"
         style={{
-          position: "absolute",
-          width: "30vw",
-          height: "30vw",
-          borderRadius: "50%",
+          width: "clamp(150px, 30vw, 500px)",
+          height: "clamp(150px, 30vw, 500px)",
           background: "var(--color-pink)",
-          filter: "blur(95px)",
+          filter: "blur(clamp(60px, 12vw, 95px))",
           top: "45%",
           left: "20%",
-          opacity: 0.18,
           animation: "orbFloat2 55s ease-in-out infinite",
         }}
       />
       {/* Orange orb — starts lower-right */}
       <div
+        className="absolute rounded-full opacity-[0.45] md:opacity-[0.18]"
         style={{
-          position: "absolute",
-          width: "28vw",
-          height: "28vw",
-          borderRadius: "50%",
+          width: "clamp(140px, 28vw, 450px)",
+          height: "clamp(140px, 28vw, 450px)",
           background: "var(--color-orange)",
-          filter: "blur(80px)",
+          filter: "blur(clamp(55px, 11vw, 80px))",
           top: "55%",
           left: "55%",
-          opacity: 0.18,
           animation: "orbFloat3 62s ease-in-out infinite",
         }}
       />
@@ -78,7 +72,7 @@ export function Orbs() {
           width: "200px",
           height: "200px",
           borderRadius: "50%",
-          background: "var(--color-foreground)",
+          background: "white",
           filter: "blur(45px)",
           opacity: 0,
           transform: "translate(-50%, -50%)",

@@ -3,6 +3,7 @@ interface PageWrapperProps {
   accentColor: "blue" | "pink" | "orange";
   children: React.ReactNode;
   contentClassName?: string;
+  wrapperClassName?: string;
 }
 
 export function PageWrapper({
@@ -10,6 +11,7 @@ export function PageWrapper({
   accentColor,
   children,
   contentClassName = "space-y-10",
+  wrapperClassName = "min-h-full p-1 md:p-10 flex flex-col justify-center",
 }: PageWrapperProps) {
   const colorClasses = {
     blue: "text-blue",
@@ -18,10 +20,10 @@ export function PageWrapper({
   };
 
   return (
-    <div className="h-full overflow-y-auto p-8 sm:p-10 flex flex-col justify-center items-center">
+    <div className={wrapperClassName}>
       <div className={contentClassName}>
         <h2
-          className={`w-full text-3xl sm:text-4xl font-bold tracking-widest mb-10 ${colorClasses[accentColor]}`}
+          className={`w-full text-md md:text-4xl font-bold tracking-widest md:mb-10 ${colorClasses[accentColor]}`}
         >
           {title}
         </h2>
