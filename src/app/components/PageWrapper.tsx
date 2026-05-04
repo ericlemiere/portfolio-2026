@@ -6,7 +6,7 @@ interface PageWrapperProps {
 
 export function PageWrapper({
   children,
-  contentClassName = "space-y-10",
+  contentClassName = "space-y-4 md:space-y-10",
   wrapperClassName = "min-h-full flex flex-col justify-center",
 }: PageWrapperProps) {
   const colorClasses = {

@@ -68,7 +68,7 @@ export function ContactPage() {
   };
 
   return (
-    <PageWrapper >
+    <PageWrapper>
       <h2
         className={`w-full text-md md:text-4xl font-bold tracking-widest md:mb-10 text-orange`}
       >
@@ -127,7 +127,7 @@ export function ContactPage() {
             <textarea
               name="message"
               placeholder="Message*"
-              rows={5}
+              rows={4}
               required
               disabled={status === "submitting"}
               className="w-full bg-transparent border-b border-foreground/50 pb-3 text-foreground placeholder:text-foreground/50 focus:outline-none focus:border-orange transition-colors duration-150 resize-none disabled:opacity-50"

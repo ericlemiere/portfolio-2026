@@ -340,13 +340,13 @@ export function ProjectsPage() {
       <div className="w-full h-full lg:h-auto lg:flex-1 flex flex-col items-center justify-center gap-2 md:gap-6">
         <div className="w-19/20 relative">
           <h2
-            className={`text-md md:text-4xl font-bold tracking-widest md:mb-4 text-blue`}
+            className={`text-md md:text-4xl font-bold tracking-widest sm:mb-4 text-blue`}
           >
             PROJECTS
           </h2>
         </div>
         <div
-          className="overflow-hidden w-full flex flex-col-reverse gap-4 h-auto py-1 md:py-4 lg:pt-12 lg:border-2 rounded-lg lg:border-blue/20"
+          className="overflow-hidden w-full flex flex-col-reverse sm:flex-col gap-4 h-auto py-1 md:py-4 lg:pt-12 lg:border-2 rounded-lg lg:border-blue/20"
           ref={emblaRef}
         >
           <div className="flex h-full lg:h-auto">
