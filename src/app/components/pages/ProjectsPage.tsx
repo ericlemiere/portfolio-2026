@@ -16,7 +16,6 @@ const PROJECTS = [
       "Tailwind CSS",
       "GSAP",
       "TypeScript",
-      "React",
     ],
     description:
       "E-commerce website for a major beef jerky brand, built with Hydrogen for the front end, integrating with Shopify for the back end, and utilizing Sanity for content management.",
@@ -40,7 +39,6 @@ const PROJECTS = [
       "Tailwind CSS",
       "GSAP",
       "TypeScript",
-      "React",
     ],
     description:
       "E-commerce website for a startup beverage brand, built with Hydrogen for the front end, integrating with Shopify for the back end, and utilizing Sanity for content management.",
@@ -130,12 +128,12 @@ function ProjectCard({
           </div>
         </div>
 
-        <p className="text-foreground/80 leading-relaxed text-lg mb-6 max-w-prose">
+        <p className="text-foreground/80 leading-relaxed md:text-lg mb-6 max-w-prose">
           {project.description}
         </p>
       </div>
 
-      <div className="w-full flex justify-between items-center">
+      <div className="flex">
         {project.learnMore && (
           <div>
             <div
