@@ -346,7 +346,7 @@ export function ProjectsPage() {
           </h2>
         </div>
         <div
-          className="overflow-hidden w-full flex flex-col-reverse gap-4 h-auto py-4 lg:pt-12 lg:border-2 rounded-lg lg:border-blue/20"
+          className="overflow-hidden w-full flex flex-col-reverse gap-4 h-auto py-1 md:py-4 lg:pt-12 lg:border-2 rounded-lg lg:border-blue/20"
           ref={emblaRef}
         >
           <div className="flex h-full lg:h-auto">
