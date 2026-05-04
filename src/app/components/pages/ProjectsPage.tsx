@@ -344,15 +344,18 @@ export function ProjectsPage() {
   }, [emblaApi]);
 
   return (
-    <PageWrapper
-      wrapperClassName="h-full p-1 md:p-10 flex flex-col"
-    >
+    <PageWrapper wrapperClassName="h-full p-1 md:p-10 flex flex-col">
       <div className="w-full h-full lg:h-auto lg:flex-1 flex flex-col items-center justify-center gap-6">
-        <h2
-          className={`w-19/20 text-md md:text-4xl font-bold tracking-widest md:mb-4 text-blue`}
-        >
-          PROJECTS
-        </h2>
+        <div className="w-19/20 relative">
+          <h2
+            className={`text-md md:text-4xl font-bold tracking-widest md:mb-4 text-blue`}
+          >
+            PROJECTS
+          </h2>
+          <h6 className="absolute w-full lg:hidden text-center text-sm text-foreground/50">
+            [swipe]
+          </h6>
+        </div>
         <div
           className="overflow-hidden w-full flex flex-col gap-4 h-auto py-4 lg:pt-12 lg:border-2 rounded-lg lg:border-blue/20"
           ref={emblaRef}
@@ -439,9 +442,6 @@ export function ProjectsPage() {
                 </svg>
               </button>
             </div>
-            <h6 className="lg:hidden text-center text-sm text-foreground/50">
-              [swipe]
-            </h6>
           </div>
         </div>
       </div>

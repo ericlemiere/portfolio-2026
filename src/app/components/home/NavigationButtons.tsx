@@ -117,25 +117,25 @@ export function NavigationButtons({
       <div className="flex fixed bottom-0 left-0 w-full h-16 z-40 lg:hidden items-end">
         <button
           onClick={() => onNavigate("projects")}
-          className={`w-1/3 text-white font-bold bg-blue transition-all duration-500 z-40 ${
+          className={`w-1/3 text-white font-bold bg-blue transition-all duration-200 z-40 ${
             visiblePage === "projects" ? "h-12" : "h-8"
-          } ${showProjects ? "opacity-100" : "opacity-20"}`}
+          } `}
         >
           Projects
         </button>
         <button
           onClick={() => onNavigate("contact")}
-          className={`w-1/3 text-white font-bold bg-orange transition-all duration-500 z-40 ${
+          className={`w-1/3 text-white font-bold bg-orange transition-all duration-200 z-40 ${
             visiblePage === "contact" ? "h-12" : "h-8"
-          } ${showContact ? "opacity-100" : "opacity-20"}`}
+          } `}
         >
           Contact
         </button>
         <button
           onClick={() => onNavigate("about")}
-          className={`w-1/3 text-white font-bold bg-pink transition-all duration-500 z-40 ${
+          className={`w-1/3 text-white font-bold bg-pink transition-all duration-200 z-40 ${
             visiblePage === "about" ? "h-12" : "h-8"
-          } ${showAbout ? "opacity-100" : "opacity-20"}`}
+          } `}
         >
           About
         </button>

@@ -131,9 +131,11 @@ export function ParticleOrb({
     });
 
     // Create particles in a sphere
-    const numParticles = 1000;
+    // Significantly reduce particle count on mobile for better iOS performance
+    const isMobile = window.innerWidth < 768;
+    const numParticles = isMobile ? 800 : 1000;
     // Responsive radius: use vw on mobile, fixed px on desktop
-    const radius = window.innerWidth < 768 ? window.innerWidth * 0.35 : 250;
+    const radius = isMobile ? window.innerWidth * 0.35 : 250;
     const particles: Particle[] = [];
 
     for (let i = 0; i < numParticles; i++) {
@@ -177,8 +179,20 @@ export function ParticleOrb({
     canvas.addEventListener("mousemove", handleMouseMove);
     canvas.addEventListener("mouseleave", handleMouseLeave);
 
+    // Frame skipping for better mobile performance
+    let frameCount = 0;
+    const skipFrames = isMobile ? 1 : 0; // Skip every other frame on mobile
+
     // Animation loop
     const animate = () => {
+      frameCount++;
+
+      // Skip frames on mobile
+      if (skipFrames > 0 && frameCount % (skipFrames + 1) !== 0) {
+        animationRef.current = requestAnimationFrame(animate);
+        return;
+      }
+
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
       // Contraction animation (starts large, contracts to center with acceleration)
