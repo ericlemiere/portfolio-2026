@@ -23,7 +23,7 @@ export function PageOverlays({ visiblePage }: PageOverlaysProps) {
           visiblePage === "projects" ? "translate-x-0" : "-translate-x-full",
         ].join(" ")}
       >
-        <div className="pt-32 sm:pt-44 lg:pt-24 pb-20 lg:pb-24 lg:m-0 lg:h-[calc(100vh-12rem)] w-screen lg:w-[60vw] max-w-5xl lg:overflow-y-hidden lg:overflow-x-hidden no-scrollbar">
+        <div className="pt-32 sm:pt-44 lg:pt-24 pb-20 lg:pb-24 lg:m-0 lg:h-[calc(100vh-12rem)] w-screen lg:w-[70vw] max-w-5xl lg:overflow-y-hidden lg:overflow-x-hidden no-scrollbar">
           <ProjectsPage />
         </div>
       </div>
