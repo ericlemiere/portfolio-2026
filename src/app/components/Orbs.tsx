@@ -4,20 +4,48 @@ import { useEffect, useRef } from "react";
 
 export function Orbs() {
   const cursorRef = useRef<HTMLDivElement>(null);
+  const mousePos = useRef({ x: 0, y: 0 });
+  const currentPos = useRef({ x: 0, y: 0 });
+  const rafId = useRef<number | null>(null);
 
   useEffect(() => {
     let revealed = false;
+
     const move = (e: MouseEvent) => {
+      mousePos.current = { x: e.clientX, y: e.clientY };
+      if (!revealed) {
+        const el = cursorRef.current;
+        if (el) {
+          el.style.opacity = "0.09";
+          revealed = true;
+          // Initialize current position to mouse position on first move
+          currentPos.current = { x: e.clientX, y: e.clientY };
+        }
+      }
+    };
+
+    const animate = () => {
       const el = cursorRef.current;
       if (!el) return;
-      if (!revealed) {
-        el.style.opacity = "0.09";
-        revealed = true;
-      }
-      el.style.transform = `translate(calc(${e.clientX}px - 50%), calc(${e.clientY}px - 50%))`;
+
+      // Smooth interpolation for cursor following
+      currentPos.current.x +=
+        (mousePos.current.x - currentPos.current.x) * 0.15;
+      currentPos.current.y +=
+        (mousePos.current.y - currentPos.current.y) * 0.15;
+
+      el.style.transform = `translate(calc(${currentPos.current.x}px - 50%), calc(${currentPos.current.y}px - 50%))`;
+
+      rafId.current = requestAnimationFrame(animate);
     };
+
     window.addEventListener("mousemove", move);
-    return () => window.removeEventListener("mousemove", move);
+    rafId.current = requestAnimationFrame(animate);
+
+    return () => {
+      window.removeEventListener("mousemove", move);
+      if (rafId.current) cancelAnimationFrame(rafId.current);
+    };
   }, []);
 
   return (
@@ -76,7 +104,8 @@ export function Orbs() {
           filter: "blur(45px)",
           opacity: 0,
           transform: "translate(-50%, -50%)",
-          transition: "transform 0.1s ease-out, opacity 0.4s ease",
+          transition: "opacity 0.4s ease",
+          willChange: "transform",
         }}
       />
     </div>

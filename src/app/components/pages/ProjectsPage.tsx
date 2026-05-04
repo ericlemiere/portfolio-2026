@@ -86,7 +86,6 @@ const PROJECTS = [
 function ProjectCard({
   project,
   index,
-  isSelected,
 }: {
   project: (typeof PROJECTS)[0];
   index: number;
@@ -103,17 +102,15 @@ function ProjectCard({
       <div>
         <div className="flex items-start justify-between gap-6 mb-6">
           <div>
-            <div className="shrink-0 flex mb-4 h-20 w-full">
+            <div className="shrink-0 relative mb-4 h-20 w-full max-w-50">
               <Image
                 src={project.logo}
                 alt={`${project.title} logo`}
-                width={80}
-                height={80}
+                fill
+                sizes="200px"
+                className="object-contain object-left"
                 style={{
-                  maxHeight: "80px",
-                  width: "auto",
-                  height: "auto",
-                  borderRadius: index === 5 ? "6px" : "0px",
+                  borderRadius: index === 6 ? "6px" : "0px",
                 }}
               />
             </div>
@@ -356,7 +353,7 @@ export function ProjectsPage() {
       {/* Unified Horizontal Carousel */}
       <div className="w-full h-full lg:h-auto lg:flex-1 flex flex-col items-center justify-center gap-6">
         <div
-          className="overflow-hidden w-full flex flex-col gap-4 h-auto py-4 lg:pt-12 lg:border-2 rounded-lg lg:border-blue/50"
+          className="overflow-hidden w-full flex flex-col gap-4 h-auto py-4 lg:pt-12 lg:border-2 rounded-lg lg:border-blue/20"
           ref={emblaRef}
         >
           <div className="flex h-full lg:h-auto">
@@ -382,10 +379,24 @@ export function ProjectsPage() {
               {/* Left Arrow */}
               <button
                 onClick={scrollPrev}
-                className="w-8 h-8 flex items-center justify-center text-foreground/50 hover:text-blue transition-colors"
+                className="border border-blue rounded-full w-12 h-12 flex items-center justify-center hover:bg-blue/30 transition-colors"
                 aria-label="Previous project"
               >
-                <span className="text-xl cursor-pointer">←</span>
+                <svg
+                  width="24"
+                  height="24"
+                  viewBox="0 0 16 16"
+                  fill="none"
+                  className="text-white cursor-pointer mr-0.5"
+                >
+                  <path
+                    d="M10 12L6 8L10 4"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
               </button>
 
               {/* Dots */}
@@ -407,10 +418,24 @@ export function ProjectsPage() {
               {/* Right Arrow */}
               <button
                 onClick={scrollNext}
-                className="w-8 h-8 flex items-center justify-center text-foreground/50 hover:text-blue transition-colors"
+                className="border border-blue rounded-full w-12 h-12 flex items-center justify-center hover:bg-blue/30 transition-colors"
                 aria-label="Next project"
               >
-                <span className="text-xl cursor-pointer">→</span>
+                <svg
+                  width="24"
+                  height="24"
+                  viewBox="0 0 16 16"
+                  fill="none"
+                  className="text-white cursor-pointer ml-0.5"
+                >
+                  <path
+                    d="M6 4L10 8L6 12"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
               </button>
             </div>
             <h6 className="lg:hidden text-center text-sm text-foreground/50">

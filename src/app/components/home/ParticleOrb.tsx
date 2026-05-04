@@ -16,9 +16,13 @@ interface Particle {
 
 interface ParticleOrbProps {
   isCompact: boolean;
+  onAnimationComplete?: () => void;
 }
 
-export function ParticleOrb({ isCompact }: ParticleOrbProps) {
+export function ParticleOrb({
+  isCompact,
+  onAnimationComplete,
+}: ParticleOrbProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const particlesRef = useRef<Particle[]>([]);
   const mouseRef = useRef({ x: 0, y: 0, isMoving: false });
@@ -31,6 +35,7 @@ export function ParticleOrb({ isCompact }: ParticleOrbProps) {
   const currentScaleRef = useRef(3.5);
   const targetYOffsetRef = useRef(0);
   const currentYOffsetRef = useRef(0);
+  const hasCalledAnimationComplete = useRef(false);
 
   // Update targets when compact state changes
   useEffect(() => {
@@ -73,7 +78,10 @@ export function ParticleOrb({ isCompact }: ParticleOrbProps) {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    const ctx = canvas.getContext("2d");
+    const ctx = canvas.getContext("2d", {
+      alpha: true,
+      willReadFrequently: true,
+    });
     if (!ctx) return;
 
     // Set canvas size
@@ -83,6 +91,44 @@ export function ParticleOrb({ isCompact }: ParticleOrbProps) {
     };
     updateSize();
     window.addEventListener("resize", updateSize);
+
+    // Pre-render blurred particles for each color (much more performant)
+    const colors = [
+      { r: 255, g: 118, b: 0 }, // orange
+      { r: 0, g: 191, b: 255 }, // blue
+      { r: 255, g: 58, b: 218 }, // pink
+    ];
+
+    const particleCache: HTMLCanvasElement[] = [];
+    colors.forEach((color) => {
+      const offscreen = document.createElement("canvas");
+      const size = 30; // Base size for cached particle
+      offscreen.width = size * 2;
+      offscreen.height = size * 2;
+      const offCtx = offscreen.getContext("2d");
+      if (offCtx) {
+        const gradient = offCtx.createRadialGradient(
+          size,
+          size,
+          0,
+          size,
+          size,
+          size,
+        );
+        gradient.addColorStop(
+          0,
+          `rgba(${color.r}, ${color.g}, ${color.b}, 0.8)`,
+        );
+        gradient.addColorStop(
+          0.4,
+          `rgba(${color.r}, ${color.g}, ${color.b}, 0.5)`,
+        );
+        gradient.addColorStop(1, `rgba(${color.r}, ${color.g}, ${color.b}, 0)`);
+        offCtx.fillStyle = gradient;
+        offCtx.fillRect(0, 0, size * 2, size * 2);
+      }
+      particleCache.push(offscreen);
+    });
 
     // Create particles in a sphere
     const numParticles = 1000;
@@ -151,6 +197,16 @@ export function ParticleOrb({ isCompact }: ParticleOrbProps) {
         const t = contractionRef.current / 200;
         const eased = t * t * t; // Ease-in cubic (accelerates as it gets closer)
         currentScaleRef.current = 3.5 - eased * (3.5 - targetScaleRef.current);
+
+        // Call animation complete callback when reaching 200
+        if (
+          contractionRef.current === 200 &&
+          !hasCalledAnimationComplete.current &&
+          onAnimationComplete
+        ) {
+          hasCalledAnimationComplete.current = true;
+          onAnimationComplete();
+        }
       } else {
         // Smooth transition to target scale and position
         currentScaleRef.current +=
@@ -215,45 +271,26 @@ export function ParticleOrb({ isCompact }: ParticleOrbProps) {
           Math.min(1, (scaledZ + radius) / (radius * 2)),
         );
 
-        // Color gradient using brand colors (orange, blue, pink) - stacked by y position
-        const colors = [
-          { r: 255, g: 118, b: 0 }, // orange
-          { r: 0, g: 191, b: 255 }, // blue
-          { r: 255, g: 58, b: 218 }, // pink
-        ];
-
+        // Select color based on y position
         const colorIndex = Math.floor(
-          ((particle.baseY / radius + 1) / 2) * colors.length,
+          ((particle.baseY / radius + 1) / 2) * particleCache.length,
         );
         const clampedIndex = Math.max(
           0,
-          Math.min(colors.length - 1, colorIndex),
+          Math.min(particleCache.length - 1, colorIndex),
         );
-        const color = colors[clampedIndex];
 
-        // Create radial gradient for glow effect (more performant than shadowBlur)
-        const gradient = ctx.createRadialGradient(
-          x2d,
-          y2d,
-          0,
-          x2d,
-          y2d,
-          size * 3,
+        // Draw pre-rendered particle with opacity
+        ctx.globalAlpha = opacity;
+        const renderSize = size * 3; // Match the glow size from before
+        ctx.drawImage(
+          particleCache[clampedIndex],
+          x2d - renderSize,
+          y2d - renderSize,
+          renderSize * 2,
+          renderSize * 2,
         );
-        gradient.addColorStop(
-          0,
-          `rgba(${color.r}, ${color.g}, ${color.b}, ${opacity})`,
-        );
-        gradient.addColorStop(
-          0.4,
-          `rgba(${color.r}, ${color.g}, ${color.b}, ${opacity * 0.6})`,
-        );
-        gradient.addColorStop(1, `rgba(${color.r}, ${color.g}, ${color.b}, 0)`);
-
-        ctx.fillStyle = gradient;
-        ctx.beginPath();
-        ctx.arc(x2d, y2d, size * 3, 0, Math.PI * 2);
-        ctx.fill();
+        ctx.globalAlpha = 1;
       });
 
       animationRef.current = requestAnimationFrame(animate);

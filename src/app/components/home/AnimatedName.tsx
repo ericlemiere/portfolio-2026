@@ -78,7 +78,7 @@ export function AnimatedName({
 
   return (
     <header
-      className="fixed top-4 left-1/2 -translate-x-1/2 z-40 text-5xl lg:text-[5vw] font-bold leading-none select-none flex flex-row items-center cursor-pointer"
+      className="fixed top-4 left-1/2 -translate-x-1/2 z-40 text-5xl lg:text-[5vw] font-bold leading-none tracking-tighter select-none flex flex-row items-center cursor-pointer"
       onClick={onNavigateHome}
       role="button"
       aria-label="Return home"

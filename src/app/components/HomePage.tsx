@@ -9,6 +9,7 @@ import { ParticleOrb } from "./home/ParticleOrb";
 
 export function HomePage() {
   const [visiblePage, setVisiblePage] = useState<PageId | null>(null);
+  const [orbAnimationComplete, setOrbAnimationComplete] = useState(false);
   const flipAnimationRef = useRef<
     ((onStateChange: () => void, reverseStagger?: boolean) => void) | null
   >(null);
@@ -37,7 +38,10 @@ export function HomePage() {
 
       <Orbs />
 
-      <ParticleOrb isCompact={atTop} />
+      <ParticleOrb
+        isCompact={atTop}
+        onAnimationComplete={() => setOrbAnimationComplete(true)}
+      />
 
       <PageOverlays visiblePage={visiblePage} />
 
@@ -47,7 +51,11 @@ export function HomePage() {
         flipAnimationRef={flipAnimationRef}
       />
 
-      <NavigationButtons onNavigate={navigate} visiblePage={visiblePage} />
+      <NavigationButtons
+        onNavigate={navigate}
+        visiblePage={visiblePage}
+        animationComplete={orbAnimationComplete}
+      />
     </main>
   );
 }

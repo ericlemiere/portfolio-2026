@@ -106,26 +106,61 @@ export function AboutPage() {
                     <li>
                       <strong className="text-pink mr-2">Superman:</strong>
                       Played guitar on the movie trailers for the 2025 Superman
-                      movie
+                      movie - &nbsp;
+                      <a
+                        href="https://www.youtube.com/watch?v=Ox8ZLF6cGM0"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-white underline underline-offset-4 hover:underline-offset-6 transition-all"
+                      >
+                        WATCH HERE
+                      </a>
                     </li>
                     <li>
                       <strong className="text-pink mr-2">Air Climber:</strong>
-                      My solo instrumental music project
+                      My solo instrumental music project - &nbsp;
+                      <a
+                        href="https://www.youtube.com/watch?v=BDyO4UBWXMw&list=OLAK5uy_mZ-qkJnEwpTY--eB8HECiy1DF5k4yp5r4"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-white underline underline-offset-4 hover:underline-offset-6 transition-all"
+                      >
+                        LISTEN HERE
+                      </a>
                     </li>
                     <li>
                       <strong className="text-pink mr-2">Surveyor:</strong>
                       Co-produced, co-wrote, and played several instruments on
-                      Surveyor's debut album XI
+                      Surveyor's debut album XI - &nbsp;
+                      <a
+                        href="https://www.youtube.com/watch?v=3dDgY3rRuOA&list=OLAK5uy_kw8knMtKTwCYCULbKG2lKuqjHpHGVddoU&index=3"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-white underline underline-offset-4 hover:underline-offset-6 transition-all"
+                      >
+                        LISTEN HERE
+                      </a>
                     </li>
-                    <li>
-                      <strong className="text-pink mr-2">Top of the Charts:</strong>
-                      Produced and recorded multiple albums that reached #1 on
-                      iTunes in their respective genres
-                    </li>
+
                     <li>
                       <strong className="text-pink mr-2">Television:</strong>
                       Had music featured on television shows and commercials,
-                      plus a live performance on Good Morning America.
+                      plus a live performance on Good Morning America - &nbsp;
+                      <a
+                        href="https://www.youtube.com/watch?v=VGAL1Yf5p2M&list=RDVGAL1Yf5p2M&start_radio=1"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-white underline underline-offset-4 hover:underline-offset-6 transition-all"
+                      >
+                        WATCH HERE
+                      </a>
+                    </li>
+                    <li>
+                      <strong className="text-pink mr-2">
+                        Top of the Charts:
+                      </strong>
+                      Produced and recorded multiple albums that reached #1 on
+                      iTunes in their respective genres
                     </li>
                     <li>
                       <strong className="text-pink mr-2">
