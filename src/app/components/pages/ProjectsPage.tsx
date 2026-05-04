@@ -50,7 +50,7 @@ const PROJECTS = [
     title: "Community Foundation For Southeast Washington Website",
     tags: ["Next.js", "Styled Components", "Sanity", "Authorize.net"],
     description:
-      "A non-profit website with a custom donation system, built using Next.js for the front end, Sanity for content management, and the Authorize.net API for payment processing.",
+      "A nonprofit website featuring a custom donation system, built with Next.js on the front end, Sanity as the CMS, and the Authorize.Net API for payment processing.",
     logo: "/cf_logo.png",
     siteLink: "https://cfsww.org/",
   },
@@ -98,33 +98,30 @@ function ProjectCard({
   return (
     <div className="bg-black/50 border lg:border-none border-foreground/10 transition-colors duration-200 shadow-[0_0_12px_rgba(255,255,255,0.1)] lg:shadow-[0_0_36px_rgba(255,255,255,0.1)] rounded-lg p-4 lg:p-8 w-full h-full flex flex-col justify-between overflow-y-auto">
       <div>
-        <div className="flex items-start justify-between gap-6 mb-6">
-          <div>
-            <div className="shrink-0 relative mb-4 h-20 w-full max-w-50">
-              <Image
-                src={project.logo}
-                alt={`${project.title} logo`}
-                fill
-                sizes="200px"
-                className="object-contain object-left"
-                style={{
-                  borderRadius: index === 6 ? "6px" : "0px",
-                }}
-              />
-            </div>
-            <h3 className="text-xl lg:text-3xl font-bold leading-tight mb-4">
-              {project.title}
-            </h3>
-            <div className="flex flex-wrap gap-2">
-              {project.tags.map((tag) => (
-                <span
-                  key={tag}
-                  className="text-xs lg:text-sm w-fit whitespace-nowrap text-white border border-blue rounded-full px-3 py-1"
-                >
-                  {tag}
-                </span>
-              ))}
-            </div>
+        <div className="mb-6">
+          {/* Desktop: Logo above */}
+          <div className="shrink-0 relative mb-4 h-20 w-full max-w-50">
+            <Image
+              src={project.logo}
+              alt={`${project.title} logo`}
+              fill
+              sizes="200px"
+              className="object-contain object-left"
+            />
+          </div>
+
+          <h3 className="text-xl lg:text-3xl font-bold leading-tight mb-4">
+            {project.title}
+          </h3>
+          <div className="flex flex-wrap gap-2">
+            {project.tags.map((tag) => (
+              <span
+                key={tag}
+                className="text-xs lg:text-sm w-fit whitespace-nowrap text-white border border-blue rounded-full px-3 py-1"
+              >
+                {tag}
+              </span>
+            ))}
           </div>
         </div>
 
@@ -135,152 +132,11 @@ function ProjectCard({
 
       <div className="flex">
         {project.learnMore && (
-          <div>
-            <div
-              className="group inline-flex items-center gap-2  text-blue hover:underline-offset-8 transition-all text-lg underline underline-offset-4 cursor-pointer"
-              onClick={toggleModal}
-            >
-              Learn More
-            </div>
-            {isModalOpen &&
-              createPortal(
-                <div
-                  className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 transition-opacity duration-300 z-50 opacity-100 pointer-events-auto"
-                  onClick={toggleModal}
-                >
-                  <div
-                    className="bg-black relative border border-foreground/20 rounded-lg p-6 lg:p-8 w-[90%] max-w-150 max-h-[85vh] overflow-y-auto"
-                    onClick={(e) => e.stopPropagation()}
-                  >
-                    <button
-                      onClick={toggleModal}
-                      className="absolute top-2 right-2 text-foreground/50 hover:text-foreground transition-colors text-3xl leading-none ml-4"
-                      aria-label="Close modal"
-                    >
-                      ×
-                    </button>
-                    <div className="flex justify-between items-start mb-6">
-                      <h3 className="text-lg lg:text-2xl font-bold text-blue">
-                        Next.js + Sanity Website Starter
-                      </h3>
-                    </div>
-                    <div className="space-y-6 text-foreground/80">
-                      <p className="leading-relaxed">
-                        Developed over three years of real client work, this
-                        custom website template is the result of continuous
-                        iteration and optimization. It provides a
-                        high-performance, flexible foundation for agencies,
-                        combining a modern frontend with a customizable Sanity
-                        backend that enables non-technical users to manage
-                        complex content with ease.
-                      </p>
-
-                      <ul className="space-y-3 list-none">
-                        <li>
-                          <strong className="text-blue mr-2">
-                            Fast, efficient builds:
-                          </strong>
-                          Content updates from Sanity appear almost immediately
-                          on the live site, and new builds deploy on Vercel in
-                          ~60 seconds with optimized performance out of the box
-                        </li>
-                        <li>
-                          <strong className="text-blue mr-2">
-                            Lightweight frontend:
-                          </strong>
-                          Minimal JavaScript shipped to the browser thanks to
-                          Tailwind-based styling
-                        </li>
-                        <li>
-                          <strong className="text-blue mr-2">
-                            SEO-first architecture:
-                          </strong>
-                          Robust SEO setup with automatic schema markup
-                        </li>
-                        <li>
-                          <strong className="text-blue mr-2">
-                            Accessibility-focused:
-                          </strong>
-                          Comprehensive ARIA labeling and accessibility
-                          improvements across components
-                        </li>
-                        <li>
-                          <strong className="text-blue mr-2">
-                            Advanced site search:
-                          </strong>
-                          Custom search indexes all Sanity content (pages,
-                          posts, events, components) and returns contextual
-                          snippets with deep linking to exact page sections
-                        </li>
-                        <li>
-                          <strong className="text-blue mr-2">
-                            Improved content editing UI:
-                          </strong>
-                          Custom-designed Sanity components for a more intuitive
-                          editing experience
-                        </li>
-                        <li>
-                          <strong className="text-blue mr-2">
-                            Visual editing with drag-and-drop:
-                          </strong>
-                          Enhanced layout control within Sanity’s presentation
-                          tool
-                        </li>
-                        <li>
-                          <strong className="text-blue mr-2">
-                            Highly customizable forms:
-                          </strong>
-                          Flexible form builder with dynamic fields and
-                          Formspree integration
-                        </li>
-                        <li>
-                          <strong className="text-blue mr-2">
-                            Flexible analytics integration:
-                          </strong>
-                          Easily add Google Analytics or Google Tag Manager IDs
-                          directly within Sanity
-                        </li>
-                        <li>
-                          <strong className="text-blue mr-2">
-                            Built-in multilingual support:
-                          </strong>
-                          Enable Google Translate and select supported languages
-                          directly in the CMS
-                        </li>
-                        <li>
-                          <strong className="text-blue mr-2">
-                            Media integrations:
-                          </strong>
-                          Both Mux and Vimeo video support, and a custom audio
-                          player with download functionality
-                        </li>
-                        <li>
-                          <strong className="text-blue mr-2">
-                            Interactive UI components:
-                          </strong>
-                          Embla carousel integration with extensive
-                          configuration options in the CMS
-                        </li>
-                        <li>
-                          <strong className="text-blue mr-2">
-                            Event management system:
-                          </strong>
-                          Includes a fully integrated, CMS-driven events
-                          calendar
-                        </li>
-                        <li>
-                          <strong className="text-blue mr-2">
-                            Internal task management:
-                          </strong>
-                          Lightweight task list built into Sanity for simple
-                          project coordination
-                        </li>
-                      </ul>
-                    </div>
-                  </div>
-                </div>,
-                document.body,
-              )}
+          <div
+            className="group inline-flex items-center gap-2 text-blue hover:underline-offset-8 transition-all text-lg underline underline-offset-4 cursor-pointer"
+            onClick={toggleModal}
+          >
+            Learn More
           </div>
         )}
 
@@ -295,6 +151,144 @@ function ProjectCard({
           </a>
         )}
       </div>
+
+      {/* Modal (shared for both mobile and desktop) */}
+      {isModalOpen &&
+        createPortal(
+          <div
+            className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 transition-opacity duration-300 z-50 opacity-100 pointer-events-auto"
+            onClick={toggleModal}
+          >
+            <div
+              className="bg-black relative border border-foreground/20 rounded-lg p-6 lg:p-8 w-[90%] max-w-150 max-h-[85vh] overflow-y-auto"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <button
+                onClick={toggleModal}
+                className="absolute top-2 right-2 text-foreground/50 hover:text-foreground transition-colors text-3xl leading-none ml-4"
+                aria-label="Close modal"
+              >
+                ×
+              </button>
+              <div className="flex justify-between items-start mb-6">
+                <h3 className="text-lg lg:text-2xl font-bold text-blue">
+                  Next.js + Sanity Website Starter
+                </h3>
+              </div>
+              <div className="space-y-6 text-foreground/80">
+                <p className="leading-relaxed">
+                  Developed over three years of real client work, this custom
+                  website template is the result of continuous iteration and
+                  optimization. It provides a high-performance, flexible
+                  foundation for agencies, combining a modern frontend with a
+                  customizable Sanity backend that enables non-technical users
+                  to manage complex content with ease.
+                </p>
+
+                <ul className="space-y-3 list-none">
+                  <li>
+                    <strong className="text-blue mr-2">
+                      Fast, efficient builds:
+                    </strong>
+                    Content updates from Sanity appear almost immediately on the
+                    live site, and new builds deploy on Vercel in ~60 seconds
+                    with optimized performance out of the box
+                  </li>
+                  <li>
+                    <strong className="text-blue mr-2">
+                      Lightweight frontend:
+                    </strong>
+                    Minimal JavaScript shipped to the browser thanks to
+                    Tailwind-based styling
+                  </li>
+                  <li>
+                    <strong className="text-blue mr-2">
+                      SEO-first architecture:
+                    </strong>
+                    Robust SEO setup with automatic schema markup
+                  </li>
+                  <li>
+                    <strong className="text-blue mr-2">
+                      Accessibility-focused:
+                    </strong>
+                    Comprehensive ARIA labeling and accessibility improvements
+                    across components
+                  </li>
+                  <li>
+                    <strong className="text-blue mr-2">
+                      Advanced site search:
+                    </strong>
+                    Custom search indexes all Sanity content (pages, posts,
+                    events, components) and returns contextual snippets with
+                    deep linking to exact page sections
+                  </li>
+                  <li>
+                    <strong className="text-blue mr-2">
+                      Improved content editing UI:
+                    </strong>
+                    Custom-designed Sanity components for a more intuitive
+                    editing experience
+                  </li>
+                  <li>
+                    <strong className="text-blue mr-2">
+                      Visual editing with drag-and-drop:
+                    </strong>
+                    Enhanced layout control within Sanity’s presentation tool
+                  </li>
+                  <li>
+                    <strong className="text-blue mr-2">
+                      Highly customizable forms:
+                    </strong>
+                    Flexible form builder with dynamic fields and Formspree
+                    integration
+                  </li>
+                  <li>
+                    <strong className="text-blue mr-2">
+                      Flexible analytics integration:
+                    </strong>
+                    Easily add Google Analytics or Google Tag Manager IDs
+                    directly within Sanity
+                  </li>
+                  <li>
+                    <strong className="text-blue mr-2">
+                      Built-in multilingual support:
+                    </strong>
+                    Enable Google Translate and select supported languages
+                    directly in the CMS
+                  </li>
+                  <li>
+                    <strong className="text-blue mr-2">
+                      Media integrations:
+                    </strong>
+                    Both Mux and Vimeo video support, and a custom audio player
+                    with download functionality
+                  </li>
+                  <li>
+                    <strong className="text-blue mr-2">
+                      Interactive UI components:
+                    </strong>
+                    Embla carousel integration with extensive configuration
+                    options in the CMS
+                  </li>
+                  <li>
+                    <strong className="text-blue mr-2">
+                      Event management system:
+                    </strong>
+                    Includes a fully integrated, CMS-driven events calendar
+                  </li>
+                  <li>
+                    <strong className="text-blue mr-2">
+                      Internal task management:
+                    </strong>
+                    Lightweight task list built into Sanity for simple project
+                    coordination
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>,
+          document.body,
+        )}
     </div>
   );
 }
@@ -343,26 +337,23 @@ export function ProjectsPage() {
 
   return (
     <PageWrapper wrapperClassName="h-full p-1 md:p-10 flex flex-col">
-      <div className="w-full h-full lg:h-auto lg:flex-1 flex flex-col items-center justify-center gap-6">
+      <div className="w-full h-full lg:h-auto lg:flex-1 flex flex-col items-center justify-center gap-2 md:gap-6">
         <div className="w-19/20 relative">
           <h2
             className={`text-md md:text-4xl font-bold tracking-widest md:mb-4 text-blue`}
           >
             PROJECTS
           </h2>
-          <h6 className="absolute w-full lg:hidden text-center text-sm text-foreground/50">
-            [swipe]
-          </h6>
         </div>
         <div
-          className="overflow-hidden w-full flex flex-col gap-4 h-auto py-4 lg:pt-12 lg:border-2 rounded-lg lg:border-blue/20"
+          className="overflow-hidden w-full flex flex-col-reverse gap-4 h-auto py-4 lg:pt-12 lg:border-2 rounded-lg lg:border-blue/20"
           ref={emblaRef}
         >
           <div className="flex h-full lg:h-auto">
             {PROJECTS.map((project, index) => (
               <div
                 key={index}
-                className={`shrink-0 flex items-center justify-center transition-opacity duration-500 px-1 lg:px-2 basis-[95%] lg:basis-[80%] ${
+                className={`shrink-0 flex items-center justify-center transition-opacity duration-500 px-1 lg:px-2 basis-full lg:basis-[80%] ${
                   index === selectedIndex ? "opacity-100" : "opacity-30"
                 }`}
               >
@@ -381,7 +372,7 @@ export function ProjectsPage() {
               {/* Left Arrow */}
               <button
                 onClick={scrollPrev}
-                className="border border-blue rounded-full w-12 h-12 flex items-center justify-center hover:bg-blue/30 transition-colors"
+                className="border border-blue rounded-full w-10 h-10 md:w-12 md:h-12 flex items-center justify-center hover:bg-blue/30 transition-colors"
                 aria-label="Previous project"
               >
                 <svg
@@ -420,7 +411,7 @@ export function ProjectsPage() {
               {/* Right Arrow */}
               <button
                 onClick={scrollNext}
-                className="border border-blue rounded-full w-12 h-12 flex items-center justify-center hover:bg-blue/30 transition-colors"
+                className="border border-blue rounded-full w-10 h-10 md:w-12 md:h-12 flex items-center justify-center hover:bg-blue/30 transition-colors"
                 aria-label="Next project"
               >
                 <svg
