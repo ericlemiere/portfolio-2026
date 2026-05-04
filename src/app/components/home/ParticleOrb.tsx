@@ -133,7 +133,7 @@ export function ParticleOrb({
     // Create particles in a sphere
     // Significantly reduce particle count on mobile for better iOS performance
     const isMobile = window.innerWidth < 768;
-    const numParticles = isMobile ? 800 : 1000;
+    const numParticles = isMobile ? 400 : 1000;
     // Responsive radius: use vw on mobile, fixed px on desktop
     const radius = isMobile ? window.innerWidth * 0.35 : 250;
     const particles: Particle[] = [];
