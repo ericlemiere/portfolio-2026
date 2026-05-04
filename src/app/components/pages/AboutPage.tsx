@@ -28,8 +28,13 @@ export function AboutPage() {
   };
 
   return (
-    <PageWrapper title="ABOUT" accentColor="pink">
+    <PageWrapper>
       {/* Bio */}
+      <h2
+        className={`w-full text-md md:text-4xl font-bold tracking-widest md:mb-10 text-pink`}
+      >
+        ABOUT
+      </h2>
       <div className="space-y-4">
         <p className="text-base lg:text-lg leading-relaxed text-foreground/75">
           I love taking things and improving them. My first career as a musician

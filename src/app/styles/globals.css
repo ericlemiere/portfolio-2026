@@ -160,3 +160,15 @@ body::before {
     transform: translate(0, 0) scale(1);
   }
 }
+
+/* globals.css */
+@layer utilities {
+  .no-scrollbar {
+    -ms-overflow-style: none; /* IE + Edge */
+    scrollbar-width: none; /* Firefox */
+  }
+
+  .no-scrollbar::-webkit-scrollbar {
+    display: none; /* Chrome, Safari */
+  }
+}

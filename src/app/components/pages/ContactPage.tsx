@@ -68,12 +68,12 @@ export function ContactPage() {
   };
 
   return (
-    <PageWrapper
-      title="CONTACT"
-      accentColor="orange"
-      contentClassName="space-y-10"
-    >
-      {/* Links */}
+    <PageWrapper >
+      <h2
+        className={`w-full text-md md:text-4xl font-bold tracking-widest md:mb-10 text-orange`}
+      >
+        CONTACT
+      </h2>
       <ul className="flex md:flex-col space-x-4  cursor-pointer">
         {LINKS.map((link) => (
           <li key={link.label}>
@@ -100,7 +100,7 @@ export function ContactPage() {
       </ul>
 
       {/* Form */}
-      <div className="md:pt-10">
+      <div className="md:pt-4">
         <p className="text-xs tracking-widest font-bold text-foreground/50 mb-8">
           SEND A MESSAGE
         </p>

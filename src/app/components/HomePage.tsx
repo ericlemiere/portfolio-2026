@@ -43,13 +43,13 @@ export function HomePage() {
         onAnimationComplete={() => setOrbAnimationComplete(true)}
       />
 
-      <PageOverlays visiblePage={visiblePage} />
-
       <AnimatedName
         isCompact={atTop}
         onNavigateHome={goHome}
         flipAnimationRef={flipAnimationRef}
       />
+
+      <PageOverlays visiblePage={visiblePage} />
 
       <NavigationButtons
         onNavigate={navigate}

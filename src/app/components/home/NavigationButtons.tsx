@@ -25,8 +25,8 @@ export function NavigationButtons({
 
     // Stagger the fade-in: About, Contact, Projects
     const timer1 = setTimeout(() => setShowAbout(true), 100);
-    const timer2 = setTimeout(() => setShowContact(true), 400);
-    const timer3 = setTimeout(() => setShowProjects(true), 700);
+    const timer2 = setTimeout(() => setShowContact(true), 300);
+    const timer3 = setTimeout(() => setShowProjects(true), 500);
 
     return () => {
       clearTimeout(timer1);
@@ -41,12 +41,12 @@ export function NavigationButtons({
       <button
         onClick={() => onNavigate("projects")}
         aria-label="Projects"
-        className={`hidden lg:flex fixed left-4 xl:left-8 top-1/2 -translate-y-1/2 z-30 text-2xl text-white tracking-widest items-center justify-center transition-all duration-500 cursor-pointer hover:text-blue ${
+        className={`hidden lg:flex fixed left-4 xl:left-6 top-1/2 -translate-y-1/2 z-40 xl:text-2xl text-white/70 tracking-widest items-center justify-center transition-all duration-500 cursor-pointer hover:text-blue ${
           showProjects ? "opacity-100" : "opacity-0"
         }`}
       >
         <span
-          className={`h-60 w-16 transition-all duration-800 ease-out cursor-pointer ${
+          className={`h-40 w-10 xl:h-60 xl:w-16 transition-all duration-800 ease-out cursor-pointer ${
             visiblePage === "projects" ? "scale-x-0 opacity-15" : "scale-x-100"
           }`}
         >
@@ -54,7 +54,9 @@ export function NavigationButtons({
         </span>
         <span
           className={`transition-all duration-800 ease-out cursor-pointer ${
-            visiblePage === "projects" ? "-ml-10 opacity-15" : "-ml-4"
+            visiblePage === "projects"
+              ? "-ml-6 xl:-ml-10 opacity-15"
+              : "-ml-2 xl:-ml-4"
           }`}
         >
           PROJECTS
@@ -64,19 +66,21 @@ export function NavigationButtons({
       <button
         onClick={() => onNavigate("about")}
         aria-label="About"
-        className={`hidden lg:flex fixed right-4 xl:right-8 top-1/2 -translate-y-1/2 z-30 text-2xl text-white tracking-widest items-center justify-center transition-all duration-500 cursor-pointer hover:text-pink ${
+        className={`hidden lg:flex fixed right-4 xl:right-6 top-1/2 -translate-y-1/2 z-40 xl:text-2xl text-white/70 tracking-widest items-center justify-center transition-all duration-500 cursor-pointer hover:text-pink ${
           showAbout ? "opacity-100" : "opacity-0"
         }`}
       >
         <span
           className={`transition-all duration-800 ease-out cursor-pointer ${
-            visiblePage === "about" ? "-mr-10 opacity-15" : "-mr-4"
+            visiblePage === "about"
+              ? "-mr-6 xl:-mr-10 opacity-15"
+              : "-mr-2 xl:-mr-4"
           }`}
         >
           ABOUT
         </span>
         <span
-          className={`h-60 w-16 transition-all duration-800 ease-out cursor-pointer ${
+          className={`h-40 w-10 xl:h-60 xl:w-16 transition-all duration-800 ease-out cursor-pointer ${
             visiblePage === "about" ? "scale-x-0 opacity-15" : "scale-x-100"
           }`}
         >
@@ -87,19 +91,21 @@ export function NavigationButtons({
       <button
         onClick={() => onNavigate("contact")}
         aria-label="Contact"
-        className={`hidden lg:flex flex-col fixed bottom-8 left-1/2 -translate-x-1/2 z-30 text-2xl text-white tracking-widest items-center justify-center transition-all duration-500 cursor-pointer hover:text-orange ${
+        className={`hidden lg:flex flex-col fixed bottom-4 left-1/2 -translate-x-1/2 z-40 xl:text-2xl text-white/70 tracking-widest items-center justify-center transition-all duration-500 cursor-pointer hover:text-orange ${
           showContact ? "opacity-100" : "opacity-0"
         }`}
       >
         <span
           className={`transition-all duration-800 ease-out cursor-pointer ${
-            visiblePage === "contact" ? "-mb-10 opacity-15" : "-mb-2"
+            visiblePage === "contact"
+              ? "-mb-6 xl:-mb-8 opacity-15"
+              : "-mb-2 xl:-mb-3"
           }`}
         >
           CONTACT
         </span>
         <span
-          className={`w-60 h-16 transition-all duration-800 ease-out cursor-pointer ${
+          className={`w-40 h-10 xl:w-60 xl:h-16 transition-all duration-800 ease-out cursor-pointer ${
             visiblePage === "contact" ? "scale-y-0 opacity-15" : "scale-y-100"
           }`}
         >
@@ -108,37 +114,28 @@ export function NavigationButtons({
       </button>
 
       {/* Mobile nav */}
-      <div className="flex fixed bottom-0 left-0 w-full h-8 z-30 lg:hidden cursor-pointer">
-        {/* Gray overlay for mobile */}
-        <div
-          className={`absolute z-50 pointer-events-none h-8 bg-black transition-all duration-300 ease-out ${
-            !visiblePage ? "opacity-0" : "opacity-50"
-          } ${
-            visiblePage === "projects"
-              ? "left-0 w-1/3 border border-pink"
-              : visiblePage === "contact"
-                ? "left-1/3 w-1/3 border border-orange"
-                : visiblePage === "about"
-                  ? "left-2/3 w-1/3 border border-blue"
-                  : "left-1/3"
-          }`}
-        />
-
+      <div className="flex fixed bottom-0 left-0 w-full h-16 z-40 lg:hidden items-end">
         <button
           onClick={() => onNavigate("projects")}
-          className="w-1/3 h-8 text-white font-bold bg-blue transition-all duration-200 cursor-pointer z-10"
+          className={`w-1/3 text-white font-bold bg-blue transition-all duration-500 z-40 ${
+            visiblePage === "projects" ? "h-12" : "h-8"
+          } ${showProjects ? "opacity-100" : "opacity-20"}`}
         >
-          <span className="cursor-pointer">Projects</span>
+          Projects
         </button>
         <button
           onClick={() => onNavigate("contact")}
-          className="w-1/3 h-8 text-white font-bold bg-orange transition-all duration-200 cursor-pointer z-10"
+          className={`w-1/3 text-white font-bold bg-orange transition-all duration-500 z-40 ${
+            visiblePage === "contact" ? "h-12" : "h-8"
+          } ${showContact ? "opacity-100" : "opacity-20"}`}
         >
           Contact
         </button>
         <button
           onClick={() => onNavigate("about")}
-          className="w-1/3 h-8 text-white font-bold bg-pink transition-all duration-200 cursor-pointer z-10"
+          className={`w-1/3 text-white font-bold bg-pink transition-all duration-500 z-40 ${
+            visiblePage === "about" ? "h-12" : "h-8"
+          } ${showAbout ? "opacity-100" : "opacity-20"}`}
         >
           About
         </button>

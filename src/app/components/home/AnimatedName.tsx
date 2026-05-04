@@ -4,7 +4,9 @@ import { useEffect, useRef } from "react";
 
 const LINE1 = ["E", "R", "I", "C"] as const;
 const LINE2 = ["L", "E", "M", "I", "E", "R", "E"] as const;
-const TOTAL_LETTERS = LINE1.length + LINE2.length;
+const LINE3 = ["S", "O", "F", "T", "W", "A", "R", "E"] as const;
+const LINE4 = ["D", "E", "V", "E", "L", "O", "P", "E", "R"] as const;
+const TOTAL_LETTERS = LINE1.length + LINE2.length + LINE3.length + LINE4.length;
 
 interface AnimatedNameProps {
   isCompact: boolean;
@@ -30,7 +32,7 @@ export function AnimatedName({
           { opacity: 0, transform: "translateY(10px)" },
           { opacity: 1, transform: "translateY(0)" },
         ],
-        { duration: 400, delay: i * 40, fill: "both", easing: "ease" },
+        { duration: 400, delay: i * 80, fill: "both", easing: "ease" },
       );
     });
 
@@ -53,23 +55,19 @@ export function AnimatedName({
         ref={(el) => {
           smallLetterRefs.current[offset + i] = el;
         }}
+        className="cursor-pointer"
         style={{
           display: "inline-block",
           opacity: 0,
           textShadow: `
-            0 0 20px rgba(0, 191, 255, 0.5),
-            0 0 20px rgba(0, 191, 255, 0.3),
-            0 0 30px rgba(0, 191, 255, 0.1),
-            1px 1px 2px rgba(0, 0, 0, 0.8),
-            2px 2px 4px rgba(0, 0, 0, 0.6),
-            3px 3px 6px rgba(0, 0, 0, 0.4),
-            4px 4px 8px rgba(0, 0, 0, 0.2)
+            0 0 20px rgba(255, 255, 255, 0.2),
+            0 0 20px rgba(255, 255, 255, 0.3),
+            0 0 30px rgba(255, 255, 255, 0.1)
           `,
           transform: "translateZ(0)",
           WebkitFontSmoothing: "antialiased",
           fontWeight: i === 0 ? "bold" : "normal",
           textTransform: i !== 0 ? "lowercase" : "uppercase",
-          cursor: 'pointer',
         }}
       >
         {letter}
@@ -77,16 +75,30 @@ export function AnimatedName({
     ));
 
   return (
-    <header
-      className="fixed top-4 left-1/2 -translate-x-1/2 z-40 text-5xl lg:text-[5vw] font-bold leading-none tracking-tighter select-none flex flex-row items-center cursor-pointer"
-      onClick={onNavigateHome}
-      role="button"
-      aria-label="Return home"
-      tabIndex={0}
-      onKeyDown={(e) => e.key === "Enter" && onNavigateHome?.()}
-    >
-      <div className="flex cursor-pointer">{renderLetters(LINE1, 0)}</div>
-      <h1 className="flex ml-4 cursor-pointer">{renderLetters(LINE2, LINE1.length)}</h1>
+    <header className="fixed top-2 lg:left-2 z-40 w-screen">
+      <div
+        className="text-6xl lg:text-[5vw] text-white/70 w-fit m-auto font-bold lg:leading-18 tracking-tighter select-none flex flex-col items-center "
+        onClick={onNavigateHome}
+        role="button"
+        aria-label="Return home"
+        tabIndex={0}
+        onKeyDown={(e) => e.key === "Enter" && onNavigateHome?.()}
+      >
+        <h1 className="flex cursor-pointer gap-3">
+          <div className="flex cursor-pointer">{renderLetters(LINE1, 0)}</div>
+          <div className="flex cursor-pointer">
+            {renderLetters(LINE2, LINE1.length)}
+          </div>
+        </h1>
+        <div className="flex gap-2">
+          <p className="text-base lg:text-xl tracking-wider cursor-pointer">
+            {renderLetters(LINE3, LINE1.length + LINE2.length)}
+          </p>
+          <p className="text-base lg:text-xl tracking-wider cursor-pointer">
+            {renderLetters(LINE4, LINE1.length + LINE2.length + LINE3.length)}
+          </p>
+        </div>
+      </div>
     </header>
   );
 }

@@ -53,7 +53,7 @@ export function Orbs() {
       aria-hidden="true"
       className="fixed inset-0 z-0 overflow-hidden pointer-events-none"
     >
-      {/* Blue orb — starts upper-center, keyframe range keeps it on screen */}
+      {/* Blue orb — starts upper-left edge */}
       <div
         className="absolute rounded-full opacity-[0.45] md:opacity-[0.18]"
         style={{
@@ -61,12 +61,12 @@ export function Orbs() {
           height: "clamp(120px, 24vw, 400px)",
           background: "var(--color-blue)",
           filter: "blur(clamp(50px, 10vw, 85px))",
-          top: "20%",
-          left: "30%",
+          top: "15%",
+          left: "5%",
           animation: "orbFloat1 45s ease-in-out infinite",
         }}
       />
-      {/* Pink orb — starts mid-left */}
+      {/* Pink orb — starts lower-left edge */}
       <div
         className="absolute rounded-full opacity-[0.55] md:opacity-[0.18]"
         style={{
@@ -74,12 +74,12 @@ export function Orbs() {
           height: "clamp(150px, 30vw, 500px)",
           background: "var(--color-pink)",
           filter: "blur(clamp(60px, 12vw, 95px))",
-          top: "45%",
-          left: "20%",
+          top: "70%",
+          left: "5%",
           animation: "orbFloat2 55s ease-in-out infinite",
         }}
       />
-      {/* Orange orb — starts lower-right */}
+      {/* Orange orb — starts upper-right edge */}
       <div
         className="absolute rounded-full opacity-[0.45] md:opacity-[0.18]"
         style={{
@@ -87,8 +87,8 @@ export function Orbs() {
           height: "clamp(140px, 28vw, 450px)",
           background: "var(--color-orange)",
           filter: "blur(clamp(55px, 11vw, 80px))",
-          top: "55%",
-          left: "55%",
+          top: "30%",
+          left: "85%",
           animation: "orbFloat3 62s ease-in-out infinite",
         }}
       />
