@@ -5,11 +5,23 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  --foreground-75: #b3b3b3;
+  --foreground-50: #7a7a7a;
+  --foreground-40: #5e5e5e;
+  --foreground-35: #565656;
+  --foreground-20: #303030;
+  --foreground-10: #181818;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-foreground-75: var(--foreground-75);
+  --color-foreground-50: var(--foreground-50);
+  --color-foreground-40: var(--foreground-40);
+  --color-foreground-35: var(--foreground-35);
+  --color-foreground-20: var(--foreground-20);
+  --color-foreground-10: var(--foreground-10);
   --font-sans: var(--font-outfit);
 }
 
@@ -17,6 +29,12 @@
   :root {
     --background: #0a0a0a;
     --foreground: #ededed;
+    --foreground-75: #b3b3b3;
+    --foreground-50: #7a7a7a;
+    --foreground-40: #5e5e5e;
+    --foreground-35: #565656;
+    --foreground-20: #303030;
+    --foreground-10: #181818;
   }
 }
 

@@ -36,14 +36,14 @@ export function AboutPage() {
         ABOUT
       </h2>
       <div className="space-y-4">
-        <p className="text-base lg:text-lg leading-relaxed text-foreground/75">
+        <p className="text-base lg:text-lg leading-relaxed text-foreground-75">
           I love taking things and improving them. My first career as a musician
           taught me the importance of creativity and discipline, and how to work
           with others to bring a vision to life. I bring that same mindset to my
           work as a software developer, where I get to build things that people
           use and enjoy.
         </p>
-        <p className="text-base lg:text-lg leading-relaxed text-foreground/75">
+        <p className="text-base lg:text-lg leading-relaxed text-foreground-75">
           I&apos;ve worked across the full stack, from custom backend CMS design
           to pixel-precise interfaces, with a particular focus on front-end
           usability, accessibility, and performance.
@@ -52,14 +52,14 @@ export function AboutPage() {
 
       {/* Skills */}
       <div>
-        <p className="text-xs lg:text-md tracking-widest font-bold text-foreground/35 mb-4">
+        <p className="text-xs lg:text-md tracking-widest font-bold text-foreground-35 mb-4">
           SKILLS
         </p>
         <div className="flex flex-wrap gap-2">
           {SKILLS.map((s) => (
             <span
               key={s}
-              className="text-sm lg:text-sm text-white border border-pink rounded-full px-3 py-1"
+              className="text-xs lg:text-sm text-white border border-pink rounded-full px-3 py-1"
             >
               {s}
             </span>
@@ -69,16 +69,16 @@ export function AboutPage() {
 
       {/* Music */}
       <div>
-        <p className="text-xs lg:text-md tracking-widest font-bold text-foreground/35 mb-4">
+        <p className="text-xs lg:text-md tracking-widest font-bold text-foreground-35 mb-4">
           MUSIC
         </p>
-        <p className="text-base lg:text-lg leading-relaxed text-foreground/75 mb-4">
+        <p className="text-base lg:text-lg leading-relaxed text-foreground-75 mb-4">
           Before software, I had a 20-year career as a musician, producer, and
           audio engineer. I toured the world playing for various artists, and
           got to do some pretty cool things along the way.
         </p>
         <div
-          className="text-pink cursor-pointer hover:underline-offset-8 transition-all duration-150 underline underline-offset-4"
+          className="text-pink text-lg cursor-pointer hover:underline-offset-8 transition-all duration-150 underline underline-offset-4"
           onClick={toggleModal}
         >
           Career Highlights
@@ -90,12 +90,12 @@ export function AboutPage() {
               onClick={toggleModal}
             >
               <div
-                className="bg-black relative border border-foreground/20 rounded-lg p-6 lg:p-8 w-[90%] max-w-150 max-h-[85vh] overflow-y-auto"
+                className="bg-black relative border border-foreground-20 rounded-lg p-6 lg:p-8 w-[90%] max-w-150 max-h-[85vh] overflow-y-auto"
                 onClick={(e) => e.stopPropagation()}
               >
                 <button
                   onClick={toggleModal}
-                  className="absolute top-2 right-2 text-foreground/50 hover:text-foreground transition-colors text-3xl leading-none ml-4"
+                  className="absolute top-2 right-2 text-foreground-50 hover:text-foreground transition-colors text-3xl leading-none ml-4"
                   aria-label="Close modal"
                 >
                   ×
@@ -106,7 +106,7 @@ export function AboutPage() {
                   </h3>
                 </div>
 
-                <div className="space-y-6 text-foreground/80">
+                <div className="space-y-6 text-foreground-75">
                   <ul className="space-y-4 list-none">
                     <li>
                       <strong className="text-pink mr-2">Superman:</strong>

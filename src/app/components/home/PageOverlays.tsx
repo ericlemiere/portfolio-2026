@@ -9,6 +9,41 @@ interface PageOverlaysProps {
   visiblePage: PageId | null;
 }
 
+interface PageConfig {
+  id: PageId;
+  component: React.ReactNode;
+  translateVisible: string;
+  translateHidden: string;
+  containerClasses: string;
+}
+
+const containerBaseClasses =
+  "pt-30 sm:pt-44 lg:pt-24 mx-auto lg:m-0 lg:pb-24 lg:h-[calc(100vh-10rem)] lg:overflow-y-auto lg:overflow-x-hidden no-scrollbar ";
+
+const PAGE_CONFIGS: PageConfig[] = [
+  {
+    id: "projects",
+    component: <ProjectsPage />,
+    translateVisible: "translate-x-0",
+    translateHidden: "-translate-x-full",
+    containerClasses: `${containerBaseClasses} pb-10 w-screen lg:w-[70vw] max-w-5xl`,
+  },
+  {
+    id: "about",
+    component: <AboutPage />,
+    translateVisible: "translate-x-0",
+    translateHidden: "translate-x-full",
+    containerClasses: `${containerBaseClasses} pb-20 w-19/20 lg:w-[60vw] max-w-5xl`,
+  },
+  {
+    id: "contact",
+    component: <ContactPage />,
+    translateVisible: "translate-y-0",
+    translateHidden: "translate-y-full",
+    containerClasses: `${containerBaseClasses} pb-10 w-19/20 lg:w-[60vw] max-w-3xl`,
+  },
+];
+
 export function PageOverlays({ visiblePage }: PageOverlaysProps) {
   return (
     <>
@@ -17,38 +52,25 @@ export function PageOverlays({ visiblePage }: PageOverlaysProps) {
         <div className="lg:hidden fixed top-0 left-0 right-0 h-36 bg-linear-to-b from-black via-black/80 to-transparent z-30 pointer-events-none" />
       )}
 
-      <div
-        className={[
-          "fixed inset-0 z-20 flex items-start lg:items-center justify-center transition-transform duration-1200 ease-out overflow-y-auto",
-          visiblePage === "projects" ? "translate-x-0" : "-translate-x-full",
-        ].join(" ")}
-      >
-        <div className="pt-32 sm:pt-44 lg:pt-24 pb-20 lg:pb-24 lg:m-0 lg:h-[calc(100vh-12rem)] w-screen lg:w-[70vw] max-w-5xl lg:overflow-y-hidden lg:overflow-x-hidden no-scrollbar">
-          <ProjectsPage />
-        </div>
-      </div>
-
-      <div
-        className={[
-          "fixed inset-0 z-20 flex items-start lg:items-center justify-center transition-transform duration-1200 ease-out overflow-y-auto",
-          visiblePage === "about" ? "translate-x-0" : "translate-x-full",
-        ].join(" ")}
-      >
-        <div className="pt-32 sm:pt-44 lg:pt-24 pb-20 mx-auto lg:m-0 lg:pb-24 lg:h-[calc(100vh-16rem)] w-19/20 lg:w-[60vw] max-w-5xl lg:overflow-y-auto no-scrollbar">
-          <AboutPage />
-        </div>
-      </div>
-
-      <div
-        className={[
-          "fixed inset-0 z-20 flex items-start lg:items-center justify-center transition-transform duration-1200 ease-out overflow-y-auto",
-          visiblePage === "contact" ? "translate-y-0" : "translate-y-full",
-        ].join(" ")}
-      >
-        <div className="pt-32 sm:pt-44 lg:pt-24 pb-20 mx-auto lg:m-0 lg:pb-24 lg:h-[calc(100vh-12rem)] w-19/20 lg:w-[60vw] max-w-3xl lg:overflow-y-auto no-scrollbar">
-          <ContactPage />
-        </div>
-      </div>
+      {PAGE_CONFIGS.map(
+        ({
+          id,
+          component,
+          translateVisible,
+          translateHidden,
+          containerClasses,
+        }) => (
+          <div
+            key={id}
+            className={[
+              "fixed inset-0 z-20 flex items-start lg:items-center justify-center transition-transform duration-1200 ease-out overflow-y-auto",
+              visiblePage === id ? translateVisible : translateHidden,
+            ].join(" ")}
+          >
+            <div className={containerClasses}>{component}</div>
+          </div>
+        ),
+      )}
     </>
   );
 }

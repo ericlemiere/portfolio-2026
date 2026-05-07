@@ -88,7 +88,7 @@ export function ContactPage() {
               {
                 <link.icon className="text-4xl group-hover:fill-orange transition-colors duration-200" />
               }
-              <span className="hidden md:block text-xs tracking-widest font-bold text-foreground/50 w-20 shrink-0 cursor-pointer">
+              <span className="hidden md:block text-xs tracking-widest font-bold text-foreground-50 w-20 shrink-0 cursor-pointer">
                 {link.label}
               </span>
               <span className="hidden md:block text-lg group-hover:text-orange transition-colors duration-200 cursor-pointer">
@@ -101,7 +101,7 @@ export function ContactPage() {
 
       {/* Form */}
       <div className="md:pt-4">
-        <p className="text-xs tracking-widest font-bold text-foreground/50 mb-8">
+        <p className="text-xs tracking-widest font-bold text-foreground-50 mb-8">
           SEND A MESSAGE
         </p>
         <form className="space-y-6" onSubmit={handleSubmit}>
@@ -112,7 +112,7 @@ export function ContactPage() {
               placeholder="Name*"
               required
               disabled={status === "submitting"}
-              className="w-full bg-transparent border-b border-foreground/50 pb-3 text-foreground placeholder:text-foreground/50 focus:outline-none focus:border-orange transition-colors duration-150 disabled:opacity-50"
+              className="w-full bg-transparent border-b border-foreground-50 pb-3 text-foreground placeholder:text-foreground-50 focus:outline-none focus:border-orange transition-colors duration-150 disabled:opacity-50"
             />
             <input
               type="email"
@@ -120,7 +120,7 @@ export function ContactPage() {
               placeholder="Email*"
               required
               disabled={status === "submitting"}
-              className="w-full bg-transparent border-b border-foreground/50 pb-3 text-foreground placeholder:text-foreground/50 focus:outline-none focus:border-orange transition-colors duration-150 disabled:opacity-50"
+              className="w-full bg-transparent border-b border-foreground-50 pb-3 text-foreground placeholder:text-foreground-50 focus:outline-none focus:border-orange transition-colors duration-150 disabled:opacity-50"
             />
           </div>
           <div className="relative">
@@ -130,7 +130,7 @@ export function ContactPage() {
               rows={4}
               required
               disabled={status === "submitting"}
-              className="w-full bg-transparent border-b border-foreground/50 pb-3 text-foreground placeholder:text-foreground/50 focus:outline-none focus:border-orange transition-colors duration-150 resize-none disabled:opacity-50"
+              className="w-full bg-transparent border-b border-foreground-50 pb-3 text-foreground placeholder:text-foreground-50 focus:outline-none focus:border-orange transition-colors duration-150 resize-none disabled:opacity-50"
             />
             {status === "success" && (
               <p className="absolute text-blue text-sm">

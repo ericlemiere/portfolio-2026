@@ -209,15 +209,15 @@ export function ParticleOrb({
         lerpFactor = 0.01 + eased * 0.09; // Range from 0.01 to 0.10
       }
 
-      if (contractionRef.current < 200) {
+      if (contractionRef.current < 120) {
         contractionRef.current++;
-        const t = contractionRef.current / 200;
+        const t = contractionRef.current / 120;
         const eased = t * t * t; // Ease-in cubic (accelerates as it gets closer)
         currentScaleRef.current = 3.5 - eased * (3.5 - targetScaleRef.current);
 
-        // Call animation complete callback when reaching 200
+        // Call animation complete callback when reaching 120
         if (
-          contractionRef.current === 200 &&
+          contractionRef.current === 120 &&
           !hasCalledAnimationComplete.current &&
           onAnimationComplete
         ) {
@@ -234,7 +234,7 @@ export function ParticleOrb({
         (targetYOffsetRef.current - currentYOffsetRef.current) * lerpFactor;
 
       // Slowly rotate the orb
-      rotationRef.current += 0.003;
+      rotationRef.current += 0.006;
 
       const centerX = canvas.width / 2;
       const centerY = canvas.height / 2 + currentYOffsetRef.current;
