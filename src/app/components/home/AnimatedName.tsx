@@ -48,14 +48,18 @@ export function AnimatedName({
     }, totalDuration);
   }, []);
 
-  const renderLetters = (letters: readonly string[], offset: number) =>
+  const renderLetters = (
+    letters: readonly string[],
+    offset: number,
+    lineIndex: number,
+  ) =>
     letters.map((letter, i) => (
       <span
         key={`${letter}-${offset + i}`}
         ref={(el) => {
           smallLetterRefs.current[offset + i] = el;
         }}
-        className="cursor-pointer"
+        className={`cursor-pointer ${lineIndex === 0 ? (i === 0 ? "text-6xl lg:text-7xl" : "text-4xl lg:text-4xl") : i === 0 ? "text-lg lg:text-xl" : "text-sm lg:text-base"}`}
         style={{
           display: "inline-block",
           opacity: 0,
@@ -67,7 +71,7 @@ export function AnimatedName({
           transform: "translateZ(0)",
           WebkitFontSmoothing: "antialiased",
           fontWeight: i === 0 ? "bold" : "normal",
-          textTransform: i !== 0 ? "lowercase" : "uppercase",
+          textTransform: "uppercase",
         }}
       >
         {letter}
@@ -77,7 +81,7 @@ export function AnimatedName({
   return (
     <header className="fixed top-2 lg:left-2 z-40 w-screen">
       <div
-        className="text-6xl lg:text-7xl text-white/70 w-fit m-auto font-bold lg:leading-18 tracking-tighter select-none flex flex-col items-center "
+        className=" text-white/70 w-fit m-auto font-bold lg:leading-18 tracking-tighter select-none flex flex-col items-center "
         onClick={onNavigateHome}
         role="button"
         aria-label="Return home"
@@ -85,17 +89,23 @@ export function AnimatedName({
         onKeyDown={(e) => e.key === "Enter" && onNavigateHome?.()}
       >
         <h1 className="flex cursor-pointer gap-3">
-          <div className="flex cursor-pointer">{renderLetters(LINE1, 0)}</div>
-          <div className="flex cursor-pointer">
-            {renderLetters(LINE2, LINE1.length)}
+          <div className="flex cursor-pointer items-baseline">
+            {renderLetters(LINE1, 0, 0)}
+          </div>
+          <div className="flex cursor-pointer items-baseline">
+            {renderLetters(LINE2, LINE1.length, 0)}
           </div>
         </h1>
         <div className="flex gap-2">
-          <p className="text-base lg:text-xl tracking-wider cursor-pointer">
-            {renderLetters(LINE3, LINE1.length + LINE2.length)}
+          <p className="flex text-base lg:text-xl tracking-wider cursor-pointer items-center">
+            {renderLetters(LINE3, LINE1.length + LINE2.length, 1)}
           </p>
-          <p className="text-base lg:text-xl tracking-wider cursor-pointer">
-            {renderLetters(LINE4, LINE1.length + LINE2.length + LINE3.length)}
+          <p className="flex text-base lg:text-xl tracking-wider cursor-pointer items-center">
+            {renderLetters(
+              LINE4,
+              LINE1.length + LINE2.length + LINE3.length,
+              1,
+            )}
           </p>
         </div>
       </div>

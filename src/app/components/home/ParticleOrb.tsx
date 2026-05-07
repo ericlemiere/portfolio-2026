@@ -234,7 +234,7 @@ export function ParticleOrb({
         (targetYOffsetRef.current - currentYOffsetRef.current) * lerpFactor;
 
       // Slowly rotate the orb
-      rotationRef.current += 0.006;
+      rotationRef.current += 0.01;
 
       const centerX = canvas.width / 2;
       const centerY = canvas.height / 2 + currentYOffsetRef.current;

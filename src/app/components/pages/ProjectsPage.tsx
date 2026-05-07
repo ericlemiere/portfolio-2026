@@ -120,7 +120,7 @@ function ProjectCard({
             />
           </div>
 
-          <h3 className="text-xl lg:text-3xl font-bold leading-tight mb-4">
+          <h3 className="text-xl lg:text-3xl font-bold leading-tight mb-4 text-white">
             {project.title}
           </h3>
           <div className="flex flex-wrap gap-2">
