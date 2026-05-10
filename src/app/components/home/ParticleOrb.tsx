@@ -1,6 +1,10 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import {
+  detectBrowser,
+  getPerformanceConfig,
+} from "@/app/utils/browserDetection";
 
 interface Particle {
   x: number;
@@ -28,6 +32,7 @@ export function ParticleOrb({
   const mouseRef = useRef({ x: 0, y: 0, isMoving: false });
   const animationRef = useRef<number | null>(null);
   const rotationRef = useRef(0);
+  const initialDelayRef = useRef(0);
   const contractionRef = useRef(0);
   const returnAnimationRef = useRef(0);
   const isReturningRef = useRef(false);
@@ -84,6 +89,10 @@ export function ParticleOrb({
     });
     if (!ctx) return;
 
+    // Detect browser and get optimized performance config
+    const browserInfo = detectBrowser();
+    const perfConfig = getPerformanceConfig(browserInfo);
+
     // Set canvas size
     const updateSize = () => {
       canvas.width = window.innerWidth;
@@ -94,7 +103,7 @@ export function ParticleOrb({
 
     // Apply blur filter to entire canvas for glow effect on mobile (GPU-accelerated)
     const isMobile = window.innerWidth < 768;
-    canvas.style.filter = isMobile ? "blur(2px)" : "none";
+    canvas.style.filter = perfConfig.useBlur ? "blur(2px)" : "none";
 
     // Pre-render gradient particles for desktop
     const gradientColors = [
@@ -104,7 +113,8 @@ export function ParticleOrb({
     ];
 
     const particleCache: HTMLCanvasElement[] = [];
-    if (!isMobile) {
+    // Only create gradient cache if not using simple rendering
+    if (!isMobile && !perfConfig.useSimpleRendering) {
       gradientColors.forEach((color) => {
         const offscreen = document.createElement("canvas");
         const size = 30;
@@ -147,8 +157,8 @@ export function ParticleOrb({
     ];
 
     // Create particles in a sphere
-    // Significantly reduce particle count on mobile for better iOS performance
-    const numParticles = isMobile ? 400 : 1000;
+    // Use browser-specific particle count for optimal performance
+    const numParticles = perfConfig.particleCount;
     // Responsive radius: use vw on mobile, fixed px on desktop
     const radius = isMobile ? window.innerWidth * 0.35 : 250;
     const particles: Particle[] = [];
@@ -199,6 +209,9 @@ export function ParticleOrb({
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
       // Contraction animation (starts large, contracts to center with acceleration)
+      // Initial delay before contraction starts (approx 0.4 seconds at 60fps) - Chrome/Edge only
+      const INITIAL_DELAY_FRAMES = (browserInfo.type === 'chrome' || browserInfo.type === 'edge') ? 24 : 0;
+      
       // Custom easing for returning from compact (slow start, then faster)
       let lerpFactor = 0.05;
       if (isReturningRef.current && returnAnimationRef.current < 100) {
@@ -209,7 +222,12 @@ export function ParticleOrb({
         lerpFactor = 0.01 + eased * 0.09; // Range from 0.01 to 0.10
       }
 
-      if (contractionRef.current < 120) {
+      // Wait for initial delay before starting contraction (Chrome/Edge only)
+      if (initialDelayRef.current < INITIAL_DELAY_FRAMES) {
+        initialDelayRef.current++;
+        // Keep orb at initial expanded size during delay
+        currentScaleRef.current = 3.5;
+      } else if (contractionRef.current < 120) {
         contractionRef.current++;
         const t = contractionRef.current / 120;
         const eased = t * t * t; // Ease-in cubic (accelerates as it gets closer)
@@ -233,8 +251,8 @@ export function ParticleOrb({
       currentYOffsetRef.current +=
         (targetYOffsetRef.current - currentYOffsetRef.current) * lerpFactor;
 
-      // Slowly rotate the orb
-      rotationRef.current += 0.01;
+      // Rotate at browser-specific speed for consistent visual experience
+      rotationRef.current += perfConfig.rotationSpeed;
 
       const centerX = canvas.width / 2;
       const centerY = canvas.height / 2 + currentYOffsetRef.current;
@@ -292,11 +310,33 @@ export function ParticleOrb({
         const colorIndex = Math.floor(((particle.baseY / radius + 1) / 2) * 3);
         const clampedIndex = Math.max(0, Math.min(2, colorIndex));
 
-        if (isMobile) {
-          // Mobile: Draw solid circle (blur filter creates glow)
-          ctx.fillStyle = solidColors[clampedIndex];
+        if (isMobile || perfConfig.useSimpleRendering) {
+          // Simple rendering: Draw solid circle with radial gradient
+          // This is more performant on Safari and mobile devices
+          const gradient = ctx.createRadialGradient(
+            x2d,
+            y2d,
+            0,
+            x2d,
+            y2d,
+            size * 3,
+          );
+          const baseColor = gradientColors[clampedIndex];
+          gradient.addColorStop(
+            0,
+            `rgba(${baseColor.r}, ${baseColor.g}, ${baseColor.b}, ${opacity * 0.8})`,
+          );
+          gradient.addColorStop(
+            0.5,
+            `rgba(${baseColor.r}, ${baseColor.g}, ${baseColor.b}, ${opacity * 0.4})`,
+          );
+          gradient.addColorStop(
+            1,
+            `rgba(${baseColor.r}, ${baseColor.g}, ${baseColor.b}, 0)`,
+          );
+          ctx.fillStyle = gradient;
           ctx.beginPath();
-          ctx.arc(x2d, y2d, size * 2, 0, Math.PI * 2);
+          ctx.arc(x2d, y2d, size * 3, 0, Math.PI * 2);
           ctx.fill();
         } else {
           // Desktop: Draw pre-rendered gradient particle
