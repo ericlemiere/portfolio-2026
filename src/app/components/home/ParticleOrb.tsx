@@ -210,8 +210,9 @@ export function ParticleOrb({
 
       // Contraction animation (starts large, contracts to center with acceleration)
       // Initial delay before contraction starts (approx 0.4 seconds at 60fps) - Chrome/Edge only
-      const INITIAL_DELAY_FRAMES = (browserInfo.type === 'chrome' || browserInfo.type === 'edge') ? 24 : 0;
-      
+      const INITIAL_DELAY_FRAMES =
+        browserInfo.type === "chrome" || browserInfo.type === "edge" ? 24 : 0;
+
       // Custom easing for returning from compact (slow start, then faster)
       let lerpFactor = 0.05;
       if (isReturningRef.current && returnAnimationRef.current < 100) {
