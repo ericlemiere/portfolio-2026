@@ -59,7 +59,7 @@ export function AnimatedName({
         ref={(el) => {
           smallLetterRefs.current[offset + i] = el;
         }}
-        className={`cursor-pointer ${lineIndex === 0 ? (i === 0 ? "text-6xl lg:text-7xl" : "text-4xl lg:text-4xl") : i === 0 ? "text-lg lg:text-xl" : "text-sm lg:text-base"}`}
+        className={`cursor-pointer ${lineIndex === 0 ? (i === 0 ? "text-6xl lg:text-7xl" : "text-4xl lg:text-4xl") : i === 0 ? "text-lg lg:text-2xl" : "text-sm lg:text-base mt-px lg:mt-1"}`}
         style={{
           display: "inline-block",
           opacity: 0,

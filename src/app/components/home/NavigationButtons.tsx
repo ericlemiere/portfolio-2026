@@ -41,7 +41,7 @@ export function NavigationButtons({
       <button
         onClick={() => onNavigate("projects")}
         aria-label="Projects"
-        className={`hidden lg:flex fixed left-4 xl:left-6 top-1/2 -translate-y-1/2 z-40 xl:text-2xl text-white/70 tracking-widest items-center justify-center transition-all duration-500 cursor-pointer hover:text-blue ${
+        className={`hidden lg:flex fixed left-4 xl:left-6 top-1/2 -translate-y-1/2 z-40 xl:text-2xl text-white/70 tracking-widest items-center justify-center transition-all duration-200 cursor-pointer hover:text-blue ${
           showProjects ? "opacity-100" : "opacity-0"
         }`}
       >
@@ -66,7 +66,7 @@ export function NavigationButtons({
       <button
         onClick={() => onNavigate("about")}
         aria-label="About"
-        className={`hidden lg:flex fixed right-4 xl:right-6 top-1/2 -translate-y-1/2 z-40 xl:text-2xl text-white/70 tracking-widest items-center justify-center transition-all duration-500 cursor-pointer hover:text-pink ${
+        className={`hidden lg:flex fixed right-4 xl:right-6 top-1/2 -translate-y-1/2 z-40 xl:text-2xl text-white/70 tracking-widest items-center justify-center transition-all duration-200 cursor-pointer hover:text-pink ${
           showAbout ? "opacity-100" : "opacity-0"
         }`}
       >
@@ -91,7 +91,7 @@ export function NavigationButtons({
       <button
         onClick={() => onNavigate("contact")}
         aria-label="Contact"
-        className={`hidden lg:flex flex-col fixed bottom-4 left-1/2 -translate-x-1/2 z-40 xl:text-2xl text-white/70 tracking-widest items-center justify-center transition-all duration-500 cursor-pointer hover:text-orange ${
+        className={`hidden lg:flex flex-col fixed bottom-4 left-1/2 -translate-x-1/2 z-40 xl:text-2xl text-white/70 tracking-widest items-center justify-center transition-all duration-200 cursor-pointer hover:text-orange ${
           showContact ? "opacity-100" : "opacity-0"
         }`}
       >
