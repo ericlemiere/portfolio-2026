@@ -311,9 +311,16 @@ export function ParticleOrb({
         const colorIndex = Math.floor(((particle.baseY / radius + 1) / 2) * 3);
         const clampedIndex = Math.max(0, Math.min(2, colorIndex));
 
-        if (isMobile || perfConfig.useSimpleRendering) {
+        if (perfConfig.useBlur) {
+          // iOS/Mobile with blur filter: Draw solid circles, blur creates the glow
+          // Use solid colors for maximum brightness
+          ctx.fillStyle = solidColors[clampedIndex];
+          ctx.beginPath();
+          ctx.arc(x2d, y2d, size * 2, 0, Math.PI * 2);
+          ctx.fill();
+        } else if (perfConfig.useSimpleRendering) {
           // Simple rendering: Draw solid circle with radial gradient
-          // This is more performant on Safari and mobile devices
+          // This is more performant on some browsers
           const gradient = ctx.createRadialGradient(
             x2d,
             y2d,
