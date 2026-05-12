@@ -88,9 +88,9 @@ const PROJECTS = [
   },
   {
     title: "Lunar Gravity Workout App",
-    tags: ["Next.js", "Tailwind CSS"],
+    tags: ["Claude", "Next.js", "Tailwind CSS"],
     description:
-      "A personal workout app built with Claude Code, Next.js, and Tailwind CSS. I built this for myself to replace an app I was using that required a subscription.",
+      "[In Progress] A personal workout app built with Claude Code, Next.js, and Tailwind CSS. I built this for myself to replace an app I was using that required a subscription.",
     logo: "/lg-logo.png",
     siteLink: "/workout",
   },
