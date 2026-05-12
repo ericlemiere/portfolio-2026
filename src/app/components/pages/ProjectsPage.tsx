@@ -86,6 +86,14 @@ const PROJECTS = [
     logo: "/wurtle-logo-nobg.png",
     siteLink: "https://wurtlegame.com/",
   },
+  {
+    title: "Lunar Gravity Workout App",
+    tags: ["Next.js", "Tailwind CSS"],
+    description:
+      "A personal workout app built with Claude Code, Next.js, and Tailwind CSS. I built this for myself to replace an app I was using that required a subscription.",
+    logo: "/lg-logo.png",
+    siteLink: "/workout",
+  },
 ];
 
 // Shared Project Card Component
