@@ -5,7 +5,7 @@ const nextConfig: NextConfig = {
     return [
       {
         source: "/workout",
-        destination: "https://workout-app-pearl-kappa.vercel.app/",
+        destination: "https://lunar-gravity.vercel.app",
         permanent: false,
       },
     ];
