@@ -87,7 +87,7 @@ const PROJECTS = [
     siteLink: "https://wurtlegame.com/",
   },
   {
-    title: "Lunar Gravity Workout App",
+    title: "MOOV Workout App",
     tags: ["Claude", "Next.js", "Tailwind CSS"],
     description:
       "[In Progress] A personal workout app built with Claude Code, Next.js, and Tailwind CSS. I built this for myself to replace an app I was using that required a subscription.",
