@@ -4,8 +4,8 @@ const nextConfig: NextConfig = {
   redirects: async () => {
     return [
       {
-        source: "/workout",
-        destination: "https://lunar-gravity.vercel.app",
+        source: "/moov",
+        destination: "https://moov-1.vercel.app/",
         permanent: false,
       },
     ];
