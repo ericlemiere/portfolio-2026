@@ -21,6 +21,7 @@ const PROJECTS = [
       "Fully custom Shopify storefront for a major beef jerky brand. Shopify handles products and checkout, while Sanity powers content management.",
     logo: "/ot_logo.png",
     siteLink: "https://oldtrapper.com/",
+    linkText: "View Site",
   },
   {
     title: "Skydrate Website",
@@ -29,6 +30,7 @@ const PROJECTS = [
       "A custom website for a unique company, built using Next.js for the front end and Sanity for content management, featuring a fully custom checkout process.",
     logo: "/skydrate_logo.png",
     siteLink: "https://skydrate.pro/",
+    linkText: "View Site",
   },
   {
     title: "Altitude Beverages Website",
@@ -44,6 +46,7 @@ const PROJECTS = [
       "Fully custom Shopify storefront for a beverage brand. Shopify handles products and checkout, while Sanity powers content management.",
     logo: "/ab_logo.svg",
     siteLink: "https://altitudebeverages.com/",
+    linkText: "View Site",
   },
 
   {
@@ -53,6 +56,7 @@ const PROJECTS = [
       "Features a custom donation system using the Authorize.Net API, built with Next.js on the front end, and Sanity as the CMS.",
     logo: "/cf_logo.png",
     siteLink: "https://cfsww.org/",
+    linkText: "View Site",
   },
   {
     title: "Bigfork Chamber of Commerce Website",
@@ -61,6 +65,7 @@ const PROJECTS = [
       "The Chamber of Commerce website for Bigfork, Montana, built using WordPress and Elementor for easy content management and customization.",
     logo: "/bf_logo.png",
     siteLink: "https://bigforkchamber.com/",
+    linkText: "View Site",
   },
   {
     title: "Vesper Aviation Website",
@@ -69,6 +74,7 @@ const PROJECTS = [
       "A Wordpress/Elementor site for a company that provides high-end flight support services and luxury amenities for private and business aviation.",
     logo: "/va_logo.png",
     siteLink: "https://vesperaviation.com/",
+    linkText: "View Site",
   },
   {
     title: "Next JS + Sanity Website Starter",
@@ -76,7 +82,8 @@ const PROJECTS = [
     description:
       "A scalable marketing agency website template built with Next.js (app router) and Sanity, offering reusable responsive components, flexible integrations, and a user-friendly CMS.",
     logo: "/next_sanity_logo.png",
-    learnMore: true,
+    linkText: "View Details",
+    hasModal: true,
   },
   {
     title: "Wurtle Game",
@@ -85,14 +92,16 @@ const PROJECTS = [
       "My own version of the hit game Wordle, with some fun additions. One of my first side projects, built with vanilla HTML, CSS, and JavaScript.",
     logo: "/wurtle-logo-nobg.png",
     siteLink: "https://wurtlegame.com/",
+    linkText: "Play Game",
   },
   {
     title: "MOOV Workout App",
-    tags: ["Claude", "Next.js", "Tailwind CSS"],
+    tags: ["Claude", "Next.js", "Tailwind CSS", "Supabase"],
     description:
-      "[In Progress] A personal workout app built with Claude Code, Next.js, and Tailwind CSS. I built this for myself to replace an app I was using that required a subscription.",
+      "[In Progress] A personal workout app built for myself to replace an app I was using that required a subscription.",
     logo: "/lg-logo.png",
     siteLink: "/moov",
+    linkText: "View App",
   },
 ];
 
@@ -110,8 +119,6 @@ function ProjectCard({
   const toggleModal = () => {
     setIsModalOpen(!isModalOpen);
   };
-
-  const isWurtle = project.title === "Wurtle Game";
 
   return (
     <div className="bg-black/50 border lg:border-none border-foreground-10 transition-colors duration-200 shadow-[0_0_12px_rgba(255,255,255,0.1)] lg:shadow-[0_0_36px_rgba(255,255,255,0.1)] rounded-lg p-4 lg:p-8 w-full h-full flex flex-col justify-between overflow-y-auto">
@@ -149,12 +156,12 @@ function ProjectCard({
       </div>
 
       <div className="flex">
-        {project.learnMore && (
+        {project.hasModal && (
           <div
             className="group inline-flex items-center gap-2 text-blue hover:underline-offset-8 transition-all text-lg underline underline-offset-4 cursor-pointer"
             onClick={toggleModal}
           >
-            Learn More
+            {project.linkText}
           </div>
         )}
 
@@ -165,7 +172,7 @@ function ProjectCard({
             rel="noopener noreferrer"
             className="group inline-flex items-center gap-2 text-blue hover:underline-offset-8 transition-all text-lg underline underline-offset-4"
           >
-            {isWurtle ? "Play Game" : "View Site"}
+            {project.linkText}
           </a>
         )}
       </div>
