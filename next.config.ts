@@ -5,7 +5,7 @@ const nextConfig: NextConfig = {
     return [
       {
         source: "/moov",
-        destination: "https://moov-1.vercel.app/",
+        destination: "https://www.moov28.com",
         permanent: false,
       },
     ];
