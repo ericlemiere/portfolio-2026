@@ -1,10 +1,6 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import {
-  detectBrowser,
-  getPerformanceConfig,
-} from "@/app/utils/browserDetection";
 
 interface Particle {
   x: number;
@@ -16,6 +12,7 @@ interface Particle {
   vx: number;
   vy: number;
   size: number;
+  colorIndex: number;
 }
 
 interface ParticleOrbProps {
@@ -23,52 +20,117 @@ interface ParticleOrbProps {
   onAnimationComplete?: () => void;
 }
 
+// Timings in seconds. Everything is driven by elapsed time rather than frame
+// counts so the animation runs identically on 60Hz and 120Hz displays.
+const INTRO_DELAY = 0.4;
+const CONTRACTION_DURATION = 2;
+const RETURN_DURATION = 1.667;
+const ROTATION_SPEED = 0.12; // radians/second
+const START_SCALE = 3.5;
+const COMPACT_SCALE = 0.4;
+
+// Exponential decay rates, in units of "per second". Each is the time-based
+// equivalent of the per-frame lerp factor it replaces: rate = -60 * ln(1 - f).
+const SCALE_LERP_RATE = 3.08; // was 0.05 per frame
+const RETURN_LERP_MIN_RATE = 0.6; // was 0.01 per frame
+const RETURN_LERP_MAX_RATE = 6.32; // was 0.10 per frame
+const PARTICLE_LERP_RATE = 6.32; // was 0.10 per frame
+const DAMPING_RATE = 6.32; // was a 0.9 multiplier per frame
+
+const PARTICLE_COLORS = [
+  { r: 255, g: 118, b: 0 }, // orange
+  { r: 0, g: 191, b: 255 }, // blue
+  { r: 255, g: 58, b: 218 }, // pink
+];
+
+const SPRITE_SIZE = 64;
+
+function getOrbRadius() {
+  return window.innerWidth < 768 ? window.innerWidth * 0.35 : 250;
+}
+
+/**
+ * Builds one pre-rendered radial-gradient sprite per colour. Building these once
+ * is the main Safari fix: the old code called createRadialGradient once per
+ * particle per frame, allocating tens of thousands of gradient objects a second.
+ */
+function createParticleSprites(): HTMLCanvasElement[] {
+  const radius = SPRITE_SIZE / 2;
+
+  return PARTICLE_COLORS.map((color) => {
+    const sprite = document.createElement("canvas");
+    sprite.width = SPRITE_SIZE;
+    sprite.height = SPRITE_SIZE;
+
+    const ctx = sprite.getContext("2d");
+    if (ctx) {
+      const gradient = ctx.createRadialGradient(
+        radius,
+        radius,
+        0,
+        radius,
+        radius,
+        radius,
+      );
+      gradient.addColorStop(0, `rgba(${color.r}, ${color.g}, ${color.b}, 0.8)`);
+      gradient.addColorStop(
+        0.4,
+        `rgba(${color.r}, ${color.g}, ${color.b}, 0.5)`,
+      );
+      gradient.addColorStop(1, `rgba(${color.r}, ${color.g}, ${color.b}, 0)`);
+      ctx.fillStyle = gradient;
+      ctx.fillRect(0, 0, SPRITE_SIZE, SPRITE_SIZE);
+    }
+
+    return sprite;
+  });
+}
+
 export function ParticleOrb({
   isCompact,
   onAnimationComplete,
 }: ParticleOrbProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const particlesRef = useRef<Particle[]>([]);
-  const mouseRef = useRef({ x: 0, y: 0, isMoving: false });
+  const pointerRef = useRef({ x: 0, y: 0, isActive: false });
   const animationRef = useRef<number | null>(null);
   const rotationRef = useRef(0);
-  const initialDelayRef = useRef(0);
+  const introDelayRef = useRef(0);
   const contractionRef = useRef(0);
-  const returnAnimationRef = useRef(0);
+  const returnElapsedRef = useRef(0);
   const isReturningRef = useRef(false);
   const targetScaleRef = useRef(1);
-  const currentScaleRef = useRef(3.5);
+  const currentScaleRef = useRef(START_SCALE);
   const targetYOffsetRef = useRef(0);
   const currentYOffsetRef = useRef(0);
   const hasCalledAnimationComplete = useRef(false);
+
+  // Kept in a ref so an unstable callback prop can never tear down the
+  // animation loop and re-seed every particle.
+  const onCompleteRef = useRef(onAnimationComplete);
+  useEffect(() => {
+    onCompleteRef.current = onAnimationComplete;
+  }, [onAnimationComplete]);
 
   // Update targets when compact state changes
   useEffect(() => {
     const updateCompactPosition = () => {
       if (isCompact) {
         // Position center so top edge of orb is at top of screen
-        // Calculate responsive radius based on viewport
-        const radius = window.innerWidth < 768 ? window.innerWidth * 0.35 : 250;
-        // Orb radius with compact scale is 0.4
-        const effectiveRadius = radius * 0.4;
-        const defaultCenter = window.innerHeight / 2; // Center is at 50% by default
-        // We want: centerY = effectiveRadius (so top of orb is at y=0)
-        // centerY = defaultCenter + offset
-        // So: offset = effectiveRadius - defaultCenter
+        const effectiveRadius = getOrbRadius() * COMPACT_SCALE;
+        const defaultCenter = window.innerHeight / 2;
         targetYOffsetRef.current = effectiveRadius - defaultCenter;
       } else {
         targetYOffsetRef.current = 0;
       }
     };
 
-    targetScaleRef.current = isCompact ? 0.4 : 1;
+    targetScaleRef.current = isCompact ? COMPACT_SCALE : 1;
     isReturningRef.current = !isCompact;
     if (!isCompact) {
-      returnAnimationRef.current = 0;
+      returnElapsedRef.current = 0;
     }
     updateCompactPosition();
 
-    // Update position on window resize when in compact mode
     const handleResize = () => {
       if (isCompact) {
         updateCompactPosition();
@@ -83,84 +145,30 @@ export function ParticleOrb({
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    const ctx = canvas.getContext("2d", {
-      alpha: true,
-      willReadFrequently: true,
-    });
+    const ctx = canvas.getContext("2d", { alpha: true });
     if (!ctx) return;
 
-    // Detect browser and get optimized performance config
-    const browserInfo = detectBrowser();
-    const perfConfig = getPerformanceConfig(browserInfo);
-
-    // Set canvas size
+    // Backing store stays at CSS-pixel resolution rather than devicePixelRatio.
+    // The orb is a diffuse glow, so the upscale is imperceptible and it saves
+    // 4-9x the fill rate on retina and mobile displays.
+    //
+    // The equality check matters on iOS: showing and hiding the URL bar fires
+    // resize repeatedly, and reassigning canvas.width reallocates the backing
+    // store and clears the frame, which shows up as a visible hitch.
     const updateSize = () => {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
+      const width = window.innerWidth;
+      const height = window.innerHeight;
+      if (canvas.width === width && canvas.height === height) return;
+      canvas.width = width;
+      canvas.height = height;
     };
     updateSize();
     window.addEventListener("resize", updateSize);
 
-    // Apply blur filter to entire canvas for glow effect on mobile (GPU-accelerated)
-    const isMobile = window.innerWidth < 768;
-    canvas.style.filter = perfConfig.useBlur ? "blur(2px)" : "none";
+    const sprites = createParticleSprites();
 
-    // Pre-render gradient particles for desktop
-    const gradientColors = [
-      { r: 255, g: 118, b: 0 }, // orange
-      { r: 0, g: 191, b: 255 }, // blue
-      { r: 255, g: 58, b: 218 }, // pink
-    ];
-
-    const particleCache: HTMLCanvasElement[] = [];
-    // Only create gradient cache if not using simple rendering
-    if (!isMobile && !perfConfig.useSimpleRendering) {
-      gradientColors.forEach((color) => {
-        const offscreen = document.createElement("canvas");
-        const size = 30;
-        offscreen.width = size * 2;
-        offscreen.height = size * 2;
-        const offCtx = offscreen.getContext("2d");
-        if (offCtx) {
-          const gradient = offCtx.createRadialGradient(
-            size,
-            size,
-            0,
-            size,
-            size,
-            size,
-          );
-          gradient.addColorStop(
-            0,
-            `rgba(${color.r}, ${color.g}, ${color.b}, 0.8)`,
-          );
-          gradient.addColorStop(
-            0.4,
-            `rgba(${color.r}, ${color.g}, ${color.b}, 0.5)`,
-          );
-          gradient.addColorStop(
-            1,
-            `rgba(${color.r}, ${color.g}, ${color.b}, 0)`,
-          );
-          offCtx.fillStyle = gradient;
-          offCtx.fillRect(0, 0, size * 2, size * 2);
-        }
-        particleCache.push(offscreen);
-      });
-    }
-
-    // Solid colors for mobile (used with blur filter)
-    const solidColors = [
-      "rgba(255, 118, 0, 0.8)", // orange
-      "rgba(0, 191, 255, 0.8)", // blue
-      "rgba(255, 58, 218, 0.8)", // pink
-    ];
-
-    // Create particles in a sphere
-    // Use browser-specific particle count for optimal performance
-    const numParticles = perfConfig.particleCount;
-    // Responsive radius: use vw on mobile, fixed px on desktop
-    const radius = isMobile ? window.innerWidth * 0.35 : 250;
+    const radius = getOrbRadius();
+    const numParticles = window.innerWidth < 768 ? 400 : 1000;
     const particles: Particle[] = [];
 
     for (let i = 0; i < numParticles; i++) {
@@ -172,6 +180,13 @@ export function ParticleOrb({
       const y = r * Math.sin(phi) * Math.sin(theta);
       const z = r * Math.cos(phi);
 
+      // baseY never changes, so the colour band each particle belongs to is
+      // fixed. Resolving it once removes three ops per particle per frame.
+      const colorIndex = Math.max(
+        0,
+        Math.min(2, Math.floor(((y / radius + 1) / 2) * 3)),
+      );
+
       particles.push({
         x,
         y,
@@ -182,194 +197,193 @@ export function ParticleOrb({
         vx: 0,
         vy: 0,
         size: Math.random() * 2 + 1,
+        colorIndex,
       });
     }
 
-    particlesRef.current = particles;
-
-    // Mouse movement handler
-    const handleMouseMove = (e: MouseEvent) => {
+    // Pointer events rather than mouse events, so a finger dragging across the
+    // orb pushes particles around the same way a cursor does. Touch only emits
+    // pointermove while the finger is down, so this costs nothing at rest.
+    const handlePointerMove = (e: PointerEvent) => {
       const rect = canvas.getBoundingClientRect();
-      mouseRef.current = {
+      pointerRef.current = {
         x: e.clientX - rect.left - canvas.width / 2,
         y: e.clientY - rect.top - canvas.height / 2,
-        isMoving: true,
+        isActive: true,
       };
     };
 
-    const handleMouseLeave = () => {
-      mouseRef.current.isMoving = false;
+    const handlePointerLeave = () => {
+      pointerRef.current.isActive = false;
     };
 
-    canvas.addEventListener("mousemove", handleMouseMove);
-    canvas.addEventListener("mouseleave", handleMouseLeave);
+    // Lifting a finger ends the interaction, but a mouse click must not: a mouse
+    // still hovers after pointerup, and pointerleave already covers it.
+    const handlePointerEnd = (e: PointerEvent) => {
+      if (e.pointerType !== "mouse") {
+        pointerRef.current.isActive = false;
+      }
+    };
 
-    // Animation loop
-    const animate = () => {
+    canvas.addEventListener("pointermove", handlePointerMove);
+    canvas.addEventListener("pointerleave", handlePointerLeave);
+    canvas.addEventListener("pointerup", handlePointerEnd);
+    canvas.addEventListener("pointercancel", handlePointerEnd);
+
+    let lastTime = performance.now();
+
+    const animate = (now: number) => {
+      // Clamped so returning from a background tab doesn't produce one enormous
+      // integration step that flings every particle off screen.
+      const dt = Math.min(0.05, (now - lastTime) / 1000);
+      lastTime = now;
+
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      // Contraction animation (starts large, contracts to center with acceleration)
-      // Initial delay before contraction starts (approx 0.4 seconds at 60fps) - Chrome/Edge only
-      const INITIAL_DELAY_FRAMES =
-        browserInfo.type === "chrome" || browserInfo.type === "edge" ? 24 : 0;
-
       // Custom easing for returning from compact (slow start, then faster)
-      let lerpFactor = 0.05;
-      if (isReturningRef.current && returnAnimationRef.current < 100) {
-        returnAnimationRef.current++;
-        const t = returnAnimationRef.current / 100;
-        // Cubic bezier approximation: starts very slow (0.7, 0, 0.3, 1)
+      let scaleLerpRate = SCALE_LERP_RATE;
+      if (isReturningRef.current && returnElapsedRef.current < RETURN_DURATION) {
+        returnElapsedRef.current = Math.min(
+          RETURN_DURATION,
+          returnElapsedRef.current + dt,
+        );
+        const t = returnElapsedRef.current / RETURN_DURATION;
         const eased = t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
-        lerpFactor = 0.01 + eased * 0.09; // Range from 0.01 to 0.10
+        scaleLerpRate =
+          RETURN_LERP_MIN_RATE +
+          eased * (RETURN_LERP_MAX_RATE - RETURN_LERP_MIN_RATE);
       }
+      const scaleLerp = 1 - Math.exp(-scaleLerpRate * dt);
 
-      // Wait for initial delay before starting contraction (Chrome/Edge only)
-      if (initialDelayRef.current < INITIAL_DELAY_FRAMES) {
-        initialDelayRef.current++;
-        // Keep orb at initial expanded size during delay
-        currentScaleRef.current = 3.5;
-      } else if (contractionRef.current < 120) {
-        contractionRef.current++;
-        const t = contractionRef.current / 120;
+      if (introDelayRef.current < INTRO_DELAY) {
+        introDelayRef.current += dt;
+        currentScaleRef.current = START_SCALE;
+      } else if (contractionRef.current < CONTRACTION_DURATION) {
+        contractionRef.current = Math.min(
+          CONTRACTION_DURATION,
+          contractionRef.current + dt,
+        );
+        const t = contractionRef.current / CONTRACTION_DURATION;
         const eased = t * t * t; // Ease-in cubic (accelerates as it gets closer)
-        currentScaleRef.current = 3.5 - eased * (3.5 - targetScaleRef.current);
+        currentScaleRef.current =
+          START_SCALE - eased * (START_SCALE - targetScaleRef.current);
 
-        // Call animation complete callback when reaching 120
         if (
-          contractionRef.current === 120 &&
-          !hasCalledAnimationComplete.current &&
-          onAnimationComplete
+          contractionRef.current >= CONTRACTION_DURATION &&
+          !hasCalledAnimationComplete.current
         ) {
           hasCalledAnimationComplete.current = true;
-          onAnimationComplete();
+          onCompleteRef.current?.();
         }
       } else {
-        // Smooth transition to target scale and position
         currentScaleRef.current +=
-          (targetScaleRef.current - currentScaleRef.current) * lerpFactor;
+          (targetScaleRef.current - currentScaleRef.current) * scaleLerp;
       }
 
       currentYOffsetRef.current +=
-        (targetYOffsetRef.current - currentYOffsetRef.current) * lerpFactor;
+        (targetYOffsetRef.current - currentYOffsetRef.current) * scaleLerp;
 
-      // Rotate at browser-specific speed for consistent visual experience
-      rotationRef.current += perfConfig.rotationSpeed;
+      rotationRef.current += ROTATION_SPEED * dt;
+
+      // Rotation is uniform across particles, so the trig comes out of the loop:
+      // two calls per frame instead of two per particle per frame.
+      const cosR = Math.cos(rotationRef.current);
+      const sinR = Math.sin(rotationRef.current);
 
       const centerX = canvas.width / 2;
       const centerY = canvas.height / 2 + currentYOffsetRef.current;
-      const mouse = mouseRef.current;
+      const pointer = pointerRef.current;
+      const radiusSq = radius * radius;
 
-      particles.forEach((particle) => {
-        // Apply rotation
-        const rotatedX =
-          particle.baseX * Math.cos(rotationRef.current) -
-          particle.baseZ * Math.sin(rotationRef.current);
-        const rotatedZ =
-          particle.baseX * Math.sin(rotationRef.current) +
-          particle.baseZ * Math.cos(rotationRef.current);
+      const particleLerp = 1 - Math.exp(-PARTICLE_LERP_RATE * dt);
+      const damping = Math.exp(-DAMPING_RATE * dt);
+      const forceScale = dt * 60;
+      const currentScale = currentScaleRef.current;
+
+      for (let i = 0; i < particles.length; i++) {
+        const particle = particles[i];
+
+        const rotatedX = particle.baseX * cosR - particle.baseZ * sinR;
+        const rotatedZ = particle.baseX * sinR + particle.baseZ * cosR;
 
         // Mouse interaction - repel particles
-        if (mouse.isMoving) {
-          const dx = rotatedX - mouse.x;
-          const dy = particle.baseY - mouse.y;
-          const dist = Math.sqrt(dx * dx + dy * dy);
-          const force = Math.max(0, radius - dist) / radius;
+        if (pointer.isActive) {
+          const dx = rotatedX - pointer.x;
+          const dy = particle.baseY - pointer.y;
+          const distSq = dx * dx + dy * dy;
 
-          particle.vx += (dx / dist) * force * 5;
-          particle.vy += (dy / dist) * force * 5;
+          // Outside the influence radius the force is zero, so the square root
+          // is only worth paying for inside it. distSq of 0 is skipped because
+          // it would divide by zero and poison the particle with NaN forever.
+          if (distSq > 0 && distSq < radiusSq) {
+            const dist = Math.sqrt(distSq);
+            const force = (radius - dist) / radius;
+            particle.vx += (dx / dist) * force * 5 * forceScale;
+            particle.vy += (dy / dist) * force * 5 * forceScale;
+          }
         }
 
-        // Apply velocity
-        particle.x += (rotatedX - particle.x + particle.vx) * 0.1;
-        particle.y += (particle.baseY - particle.y + particle.vy) * 0.1;
+        particle.x += (rotatedX - particle.x + particle.vx) * particleLerp;
+        particle.y += (particle.baseY - particle.y + particle.vy) * particleLerp;
         particle.z = rotatedZ;
 
-        // Damping
-        particle.vx *= 0.9;
-        particle.vy *= 0.9;
+        particle.vx *= damping;
+        particle.vy *= damping;
 
-        // Apply expansion/contraction scale
-        const scaledX = particle.x * currentScaleRef.current;
-        const scaledY = particle.y * currentScaleRef.current;
-        const scaledZ = particle.z * currentScaleRef.current;
+        const scaledX = particle.x * currentScale;
+        const scaledY = particle.y * currentScale;
+        const scaledZ = particle.z * currentScale;
 
-        // Project to 2D
-        const scale = Math.max(0.1, 300 / (300 + scaledZ));
+        // Upper clamp caps how large a single near-camera particle can get.
+        // Without it the intro's 3.5x scale can push one sprite to cover a large
+        // part of the screen, producing a fill-rate spike on the exact frames
+        // that are already the most expensive.
+        const scale = Math.min(4, Math.max(0.1, 300 / (300 + scaledZ)));
         const x2d = scaledX * scale + centerX;
         const y2d = scaledY * scale + centerY;
 
-        // Size based on depth (ensure always positive)
-        const size = Math.abs(particle.size * scale);
+        const drawSize = particle.size * scale * 6;
 
-        // Opacity based on depth
-        const opacity = Math.max(
+        // Cheap reject for anything outside the viewport.
+        const half = drawSize / 2;
+        if (
+          x2d + half < 0 ||
+          x2d - half > canvas.width ||
+          y2d + half < 0 ||
+          y2d - half > canvas.height
+        ) {
+          continue;
+        }
+
+        // Continuous opacity. Quantising this into pre-baked sprite levels
+        // batches better in theory, but each particle then visibly pops as it
+        // rotates through depth and hundreds of them together read as shimmer.
+        ctx.globalAlpha = Math.max(
           0.2,
           Math.min(1, (scaledZ + radius) / (radius * 2)),
         );
+        ctx.drawImage(
+          sprites[particle.colorIndex],
+          x2d - half,
+          y2d - half,
+          drawSize,
+          drawSize,
+        );
+      }
 
-        // Select color based on y position
-        const colorIndex = Math.floor(((particle.baseY / radius + 1) / 2) * 3);
-        const clampedIndex = Math.max(0, Math.min(2, colorIndex));
-
-        if (perfConfig.useBlur) {
-          // iOS/Mobile with blur filter: Draw solid circles, blur creates the glow
-          // Use solid colors for maximum brightness
-          ctx.fillStyle = solidColors[clampedIndex];
-          ctx.beginPath();
-          ctx.arc(x2d, y2d, size * 2, 0, Math.PI * 2);
-          ctx.fill();
-        } else if (perfConfig.useSimpleRendering) {
-          // Simple rendering: Draw solid circle with radial gradient
-          // This is more performant on some browsers
-          const gradient = ctx.createRadialGradient(
-            x2d,
-            y2d,
-            0,
-            x2d,
-            y2d,
-            size * 3,
-          );
-          const baseColor = gradientColors[clampedIndex];
-          gradient.addColorStop(
-            0,
-            `rgba(${baseColor.r}, ${baseColor.g}, ${baseColor.b}, ${opacity * 0.8})`,
-          );
-          gradient.addColorStop(
-            0.5,
-            `rgba(${baseColor.r}, ${baseColor.g}, ${baseColor.b}, ${opacity * 0.4})`,
-          );
-          gradient.addColorStop(
-            1,
-            `rgba(${baseColor.r}, ${baseColor.g}, ${baseColor.b}, 0)`,
-          );
-          ctx.fillStyle = gradient;
-          ctx.beginPath();
-          ctx.arc(x2d, y2d, size * 3, 0, Math.PI * 2);
-          ctx.fill();
-        } else {
-          // Desktop: Draw pre-rendered gradient particle
-          ctx.globalAlpha = opacity;
-          const renderSize = size * 3;
-          ctx.drawImage(
-            particleCache[clampedIndex],
-            x2d - renderSize,
-            y2d - renderSize,
-            renderSize * 2,
-            renderSize * 2,
-          );
-          ctx.globalAlpha = 1;
-        }
-      });
+      ctx.globalAlpha = 1;
 
       animationRef.current = requestAnimationFrame(animate);
     };
 
-    animate();
+    animationRef.current = requestAnimationFrame(animate);
 
     return () => {
       window.removeEventListener("resize", updateSize);
-      canvas.removeEventListener("mousemove", handleMouseMove);
-      canvas.removeEventListener("mouseleave", handleMouseLeave);
+      canvas.removeEventListener("pointermove", handlePointerMove);
+      canvas.removeEventListener("pointerleave", handlePointerLeave);
+      canvas.removeEventListener("pointerup", handlePointerEnd);
+      canvas.removeEventListener("pointercancel", handlePointerEnd);
       if (animationRef.current) {
         cancelAnimationFrame(animationRef.current);
       }

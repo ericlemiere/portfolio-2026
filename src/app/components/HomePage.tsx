@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useCallback } from "react";
 import { Orbs } from "./Orbs";
 import { AnimatedName } from "./home/AnimatedName";
 import { NavigationButtons, PageId } from "./home/NavigationButtons";
@@ -15,6 +15,10 @@ export function HomePage() {
   >(null);
 
   const atTop = visiblePage !== null;
+
+  const handleOrbAnimationComplete = useCallback(() => {
+    setOrbAnimationComplete(true);
+  }, []);
 
   const navigate = (page: PageId) => {
     if (!atTop && flipAnimationRef.current) {
@@ -40,7 +44,7 @@ export function HomePage() {
 
       <ParticleOrb
         isCompact={atTop}
-        onAnimationComplete={() => setOrbAnimationComplete(true)}
+        onAnimationComplete={handleOrbAnimationComplete}
       />
 
       <AnimatedName

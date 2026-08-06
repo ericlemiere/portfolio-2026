@@ -2,6 +2,10 @@
 
 import { useEffect, useRef } from "react";
 
+// Mirrors the `md:` breakpoint that hides the cursor orb in the markup below, so
+// the follow loop is idle on exactly the screens where the orb isn't shown.
+const DESKTOP_QUERY = "(min-width: 768px)";
+
 export function Orbs() {
   const cursorRef = useRef<HTMLDivElement>(null);
   const mousePos = useRef({ x: 0, y: 0 });
@@ -26,25 +30,48 @@ export function Orbs() {
 
     const animate = () => {
       const el = cursorRef.current;
-      if (!el) return;
 
-      // Smooth interpolation for cursor following
-      currentPos.current.x +=
-        (mousePos.current.x - currentPos.current.x) * 0.15;
-      currentPos.current.y +=
-        (mousePos.current.y - currentPos.current.y) * 0.15;
+      if (el) {
+        // Smooth interpolation for cursor following
+        currentPos.current.x +=
+          (mousePos.current.x - currentPos.current.x) * 0.15;
+        currentPos.current.y +=
+          (mousePos.current.y - currentPos.current.y) * 0.15;
 
-      el.style.transform = `translate(calc(${currentPos.current.x}px - 50%), calc(${currentPos.current.y}px - 50%))`;
+        el.style.transform = `translate(calc(${currentPos.current.x}px - 50%), calc(${currentPos.current.y}px - 50%))`;
+      }
 
+      // Always reschedule. Bailing out here when the ref is momentarily empty
+      // would kill the loop permanently instead of just skipping a frame.
       rafId.current = requestAnimationFrame(animate);
     };
 
-    window.addEventListener("mousemove", move);
-    rafId.current = requestAnimationFrame(animate);
+    const start = () => {
+      if (rafId.current !== null) return;
+      window.addEventListener("mousemove", move);
+      rafId.current = requestAnimationFrame(animate);
+    };
+
+    const stop = () => {
+      window.removeEventListener("mousemove", move);
+      if (rafId.current !== null) {
+        cancelAnimationFrame(rafId.current);
+        rafId.current = null;
+      }
+      // Reset so the orb fades in again from scratch on the way back to desktop.
+      revealed = false;
+      if (cursorRef.current) cursorRef.current.style.opacity = "0";
+    };
+
+    const desktop = window.matchMedia(DESKTOP_QUERY);
+    const sync = () => (desktop.matches ? start() : stop());
+
+    sync();
+    desktop.addEventListener("change", sync);
 
     return () => {
-      window.removeEventListener("mousemove", move);
-      if (rafId.current) cancelAnimationFrame(rafId.current);
+      desktop.removeEventListener("change", sync);
+      stop();
     };
   }, []);
 
@@ -92,9 +119,12 @@ export function Orbs() {
           animation: "orbFloat3 62s ease-in-out infinite",
         }}
       />
-      {/* Cursor-following orb */}
+      {/* Cursor-following orb — hidden below the md breakpoint. Done in CSS so
+          visibility never depends on JS state resolving, and so a display:none
+          element builds no layer and its blur costs nothing on small screens. */}
       <div
         ref={cursorRef}
+        className="hidden md:block"
         style={{
           position: "fixed",
           width: "200px",

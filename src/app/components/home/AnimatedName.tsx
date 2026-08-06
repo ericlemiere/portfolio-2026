@@ -59,7 +59,7 @@ export function AnimatedName({
         ref={(el) => {
           smallLetterRefs.current[offset + i] = el;
         }}
-        className={`cursor-pointer ${lineIndex === 0 ? (i === 0 ? "text-6xl lg:text-7xl" : "text-4xl lg:text-4xl") : i === 0 ? "text-lg lg:text-2xl" : "text-sm lg:text-base mt-px lg:mt-1"}`}
+        className={`cursor-pointer ${lineIndex === 0 ? (i === 0 ? "text-5xl lg:text-6xl" : "text-4xl lg:text-5xl") : i === 0 ? "text-sm lg:text-base" : "text-sm lg:text-base"}`}
         style={{
           display: "inline-block",
           opacity: 0,
@@ -70,7 +70,7 @@ export function AnimatedName({
           `,
           transform: "translateZ(0)",
           WebkitFontSmoothing: "antialiased",
-          fontWeight: i === 0 ? "bold" : "normal",
+          fontWeight: i === 0 ? "normal" : "normal",
           textTransform: "uppercase",
         }}
       >
