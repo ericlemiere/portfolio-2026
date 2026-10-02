@@ -1,109 +1,11 @@
 "use client";
 
 import { PageWrapper } from "../PageWrapper";
+import { Modal } from "../Modal";
+import { PROJECTS } from "./PROJECTS";
 import Image from "next/image";
 import { useCallback, useEffect, useState } from "react";
-import { createPortal } from "react-dom";
 import useEmblaCarousel from "embla-carousel-react";
-
-const PROJECTS = [
-  {
-    title: "Old Trapper Beef Jerky Website",
-    tags: [
-      "Hydrogen",
-      "Shopify",
-      "Sanity",
-      "Tailwind CSS",
-      "GSAP",
-      "TypeScript",
-    ],
-    description:
-      "Fully custom Shopify storefront for a major beef jerky brand. Shopify handles products and checkout, while Sanity powers content management.",
-    logo: "/ot_logo.png",
-    siteLink: "https://oldtrapper.com/",
-    linkText: "View Site",
-  },
-  {
-    title: "Skydrate Website",
-    tags: ["Next.js", "Styled Components", "Sanity"],
-    description:
-      "A custom website for a unique company, built using Next.js for the front end and Sanity for content management, featuring a fully custom checkout process.",
-    logo: "/skydrate_logo.png",
-    siteLink: "https://skydrate.pro/",
-    linkText: "View Site",
-  },
-  {
-    title: "Altitude Beverages Website",
-    tags: [
-      "Hydrogen",
-      "Shopify",
-      "Sanity",
-      "Tailwind CSS",
-      "GSAP",
-      "TypeScript",
-    ],
-    description:
-      "Fully custom Shopify storefront for a beverage brand. Shopify handles products and checkout, while Sanity powers content management.",
-    logo: "/ab_logo.svg",
-    siteLink: "https://altitudebeverages.com/",
-    linkText: "View Site",
-  },
-
-  {
-    title: "Community Foundation For SW Washington Website",
-    tags: ["Next.js", "Styled Components", "Sanity", "Authorize.net"],
-    description:
-      "Features a custom donation system using the Authorize.Net API, built with Next.js on the front end, and Sanity as the CMS.",
-    logo: "/cf_logo.png",
-    siteLink: "https://cfsww.org/",
-    linkText: "View Site",
-  },
-  {
-    title: "Bigfork Chamber of Commerce Website",
-    tags: ["Wordpress", "Elementor"],
-    description:
-      "The Chamber of Commerce website for Bigfork, Montana, built using WordPress and Elementor for easy content management and customization.",
-    logo: "/bf_logo.png",
-    siteLink: "https://bigforkchamber.com/",
-    linkText: "View Site",
-  },
-  {
-    title: "Vesper Aviation Website",
-    tags: ["Wordpress", "Elementor", "Custom Google Maps Integration"],
-    description:
-      "A Wordpress/Elementor site for a company that provides high-end flight support services and luxury amenities for private and business aviation.",
-    logo: "/va_logo.png",
-    siteLink: "https://vesperaviation.com/",
-    linkText: "View Site",
-  },
-  {
-    title: "Next JS + Sanity Website Starter",
-    tags: ["Next.js", "Sanity", "Tailwind CSS"],
-    description:
-      "A scalable marketing agency website template built with Next.js (app router) and Sanity, offering reusable responsive components, flexible integrations, and a user-friendly CMS.",
-    logo: "/next_sanity_logo.png",
-    linkText: "View Details",
-    hasModal: true,
-  },
-  {
-    title: "Wurtle Game",
-    tags: ["HTML", "CSS", "JavaScript"],
-    description:
-      "My own version of the hit game Wordle, with some fun additions. One of my first side projects, built with vanilla HTML, CSS, and JavaScript.",
-    logo: "/wurtle-logo-nobg.png",
-    siteLink: "https://wurtlegame.com/",
-    linkText: "Play Game",
-  },
-  {
-    title: "MOOV Workout App",
-    tags: ["Claude", "Next.js", "Tailwind CSS", "Supabase"],
-    description:
-      "[In Progress] A personal workout app built for myself to replace an app I was using that required a subscription.",
-    logo: "/lg-logo.png",
-    siteLink: "/moov",
-    linkText: "View App",
-  },
-];
 
 // Shared Project Card Component
 function ProjectCard({
@@ -116,8 +18,12 @@ function ProjectCard({
 }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const toggleModal = () => {
-    setIsModalOpen(!isModalOpen);
+  const openModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
   };
 
   return (
@@ -159,7 +65,7 @@ function ProjectCard({
         {project.hasModal && (
           <div
             className="group inline-flex items-center gap-2 text-blue hover:underline-offset-8 transition-all text-lg underline underline-offset-4 cursor-pointer"
-            onClick={toggleModal}
+            onClick={openModal}
           >
             {project.linkText}
           </div>
@@ -178,142 +84,122 @@ function ProjectCard({
       </div>
 
       {/* Modal (shared for both mobile and desktop) */}
-      {isModalOpen &&
-        createPortal(
-          <div
-            className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 transition-opacity duration-300 z-50 opacity-100 pointer-events-auto"
-            onClick={toggleModal}
-          >
-            <div
-              className="bg-black relative border border-foreground-20 rounded-lg p-6 lg:p-8 w-[90%] max-w-150 max-h-[85vh] overflow-y-auto"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <button
-                onClick={toggleModal}
-                className="absolute top-2 right-2 text-foreground-50 hover:text-foreground transition-colors text-3xl leading-none ml-4"
-                aria-label="Close modal"
-              >
-                ×
-              </button>
-              <div className="flex justify-between items-start mb-6">
-                <h3 className="text-lg lg:text-2xl font-bold text-blue">
-                  Next.js + Sanity Website Starter
-                </h3>
-              </div>
-              <div className="space-y-6 text-foreground-75">
-                <p className="leading-relaxed">
-                  Developed over three years of real client work, this custom
-                  website template is the result of continuous iteration and
-                  optimization. It provides a high-performance, flexible
-                  foundation for agencies, combining a modern frontend with a
-                  customizable Sanity backend that enables non-technical users
-                  to manage complex content with ease.
-                </p>
+      <Modal
+        isOpen={isModalOpen}
+        onClose={closeModal}
+        title="Next.js + Sanity Website Starter"
+        titleClassName="text-blue"
+      >
+        <div className="space-y-6 text-foreground-75">
+          <p className="leading-relaxed">
+            Developed over three years of real client work, this custom website
+            template is the result of continuous iteration and optimization. It
+            provides a high-performance, flexible foundation for agencies,
+            combining a modern frontend with a customizable Sanity backend that
+            enables non-technical users to manage complex content with ease.
+          </p>
 
-                <ul className="space-y-3 list-none">
-                  <li>
-                    <strong className="text-blue mr-2 flex">
-                      Fast, efficient builds:
-                    </strong>
-                    Content updates from Sanity appear almost immediately on the
-                    live site, and new builds deploy on Vercel in ~60 seconds
-                    with optimized performance out of the box
-                  </li>
-                  <li>
-                    <strong className="text-blue mr-2 flex">
-                      Lightweight frontend:
-                    </strong>
-                    Minimal JavaScript shipped to the browser thanks to
-                    Tailwind-based styling
-                  </li>
-                  <li>
-                    <strong className="text-blue mr-2 flex">
-                      SEO-first architecture:
-                    </strong>
-                    Robust SEO setup with automatic schema markup
-                  </li>
-                  <li>
-                    <strong className="text-blue mr-2 flex">
-                      Accessibility-focused:
-                    </strong>
-                    Comprehensive ARIA labeling and accessibility improvements
-                    across components
-                  </li>
-                  <li>
-                    <strong className="text-blue mr-2 flex">
-                      Advanced site search:
-                    </strong>
-                    Custom search indexes all Sanity content (pages, posts,
-                    events, components) and returns contextual snippets with
-                    deep linking to exact page sections
-                  </li>
-                  <li>
-                    <strong className="text-blue mr-2 flex">
-                      Improved content editing UI:
-                    </strong>
-                    Custom-designed Sanity components for a more intuitive
-                    editing experience
-                  </li>
-                  <li>
-                    <strong className="text-blue mr-2 flex">
-                      Visual editing with drag-and-drop:
-                    </strong>
-                    Enhanced layout control within Sanity’s presentation tool
-                  </li>
-                  <li>
-                    <strong className="text-blue mr-2 flex">
-                      Highly customizable forms:
-                    </strong>
-                    Flexible form builder with dynamic fields and Formspree
-                    integration
-                  </li>
-                  <li>
-                    <strong className="text-blue mr-2 flex">
-                      Flexible analytics integration:
-                    </strong>
-                    Easily add Google Analytics or Google Tag Manager IDs
-                    directly within Sanity
-                  </li>
-                  <li>
-                    <strong className="text-blue mr-2 flex">
-                      Built-in multilingual support:
-                    </strong>
-                    Enable Google Translate and select supported languages
-                    directly in the CMS
-                  </li>
-                  <li>
-                    <strong className="text-blue mr-2 flex">
-                      Media integrations:
-                    </strong>
-                    Both Mux and Vimeo video support, and a custom audio player
-                    with download functionality
-                  </li>
-                  <li>
-                    <strong className="text-blue mr-2 flex">
-                      Interactive UI components:
-                    </strong>
-                    Embla carousel integration with extensive configuration
-                    options in the CMS
-                  </li>
-                  <li>
-                    <strong className="text-blue mr-2 flex">
-                      Event management system:
-                    </strong>
-                    Includes a fully integrated, CMS-driven events calendar
-                  </li>
-                  <li>
-                    <strong className="text-blue mr-2 flex">
-                      Internal task management:
-                    </strong>
-                    Lightweight task list built into Sanity for simple project
-                    coordination
-                  </li>
-                </ul>
-              </div>
-            </div>
-          </div>,
-          document.body,
-        )}
+          <ul className="space-y-3 list-none">
+            <li>
+              <strong className="text-blue mr-2 flex">
+                Fast, efficient builds:
+              </strong>
+              Content updates from Sanity appear almost immediately on the live
+              site, and new builds deploy on Vercel in ~60 seconds with
+              optimized performance out of the box
+            </li>
+            <li>
+              <strong className="text-blue mr-2 flex">
+                Lightweight frontend:
+              </strong>
+              Minimal JavaScript shipped to the browser thanks to Tailwind-based
+              styling
+            </li>
+            <li>
+              <strong className="text-blue mr-2 flex">
+                SEO-first architecture:
+              </strong>
+              Robust SEO setup with automatic schema markup
+            </li>
+            <li>
+              <strong className="text-blue mr-2 flex">
+                Accessibility-focused:
+              </strong>
+              Comprehensive ARIA labeling and accessibility improvements across
+              components
+            </li>
+            <li>
+              <strong className="text-blue mr-2 flex">
+                Advanced site search:
+              </strong>
+              Custom search indexes all Sanity content (pages, posts, events,
+              components) and returns contextual snippets with deep linking to
+              exact page sections
+            </li>
+            <li>
+              <strong className="text-blue mr-2 flex">
+                Improved content editing UI:
+              </strong>
+              Custom-designed Sanity components for a more intuitive editing
+              experience
+            </li>
+            <li>
+              <strong className="text-blue mr-2 flex">
+                Visual editing with drag-and-drop:
+              </strong>
+              Enhanced layout control within Sanity’s presentation tool
+            </li>
+            <li>
+              <strong className="text-blue mr-2 flex">
+                Highly customizable forms:
+              </strong>
+              Flexible form builder with dynamic fields and Formspree
+              integration
+            </li>
+            <li>
+              <strong className="text-blue mr-2 flex">
+                Flexible analytics integration:
+              </strong>
+              Easily add Google Analytics or Google Tag Manager IDs directly
+              within Sanity
+            </li>
+            <li>
+              <strong className="text-blue mr-2 flex">
+                Built-in multilingual support:
+              </strong>
+              Enable Google Translate and select supported languages directly in
+              the CMS
+            </li>
+            <li>
+              <strong className="text-blue mr-2 flex">
+                Media integrations:
+              </strong>
+              Both Mux and Vimeo video support, and a custom audio player with
+              download functionality
+            </li>
+            <li>
+              <strong className="text-blue mr-2 flex">
+                Interactive UI components:
+              </strong>
+              Embla carousel integration with extensive configuration options in
+              the CMS
+            </li>
+            <li>
+              <strong className="text-blue mr-2 flex">
+                Event management system:
+              </strong>
+              Includes a fully integrated, CMS-driven events calendar
+            </li>
+            <li>
+              <strong className="text-blue mr-2 flex">
+                Internal task management:
+              </strong>
+              Lightweight task list built into Sanity for simple project
+              coordination
+            </li>
+          </ul>
+        </div>
+      </Modal>
     </div>
   );
 }
@@ -405,7 +291,7 @@ export function ProjectsPage() {
                   height="24"
                   viewBox="0 0 16 16"
                   fill="none"
-                  className="text-white cursor-pointer mr-0.5"
+                  className="text-white mr-0.5 pointer-events-none"
                 >
                   <path
                     d="M10 12L6 8L10 4"
@@ -444,7 +330,7 @@ export function ProjectsPage() {
                   height="24"
                   viewBox="0 0 16 16"
                   fill="none"
-                  className="text-white cursor-pointer ml-0.5"
+                  className="text-white ml-0.5 pointer-events-none"
                 >
                   <path
                     d="M6 4L10 8L6 12"
